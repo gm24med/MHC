@@ -10,6 +10,33 @@ Hyper-Connections (HC) and mHC provide a way to mix historical network states to
 - **Easy integration**: Use `MHCSequential` or `inject_mhc` for transparent usage.
 - **Advanced features**: Support for Matrix Mixing and Doubly Stochastic constraints.
 
+## TensorFlow (Optional)
+
+Install the extra and use the TensorFlow layers:
+
+```bash
+pip install "mhc[tf]"
+```
+
+```python
+from mhc.tf import TFMHCSequential
+```
+
+## Visualization (Optional)
+
+```bash
+pip install "mhc[viz]"
+```
+
+## Logging
+
+```python
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("mhc").info("mHC logging enabled")
+```
+
 ## Quickstart
 
 ```python

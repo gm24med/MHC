@@ -1,3 +1,5 @@
+import logging
+
 from .layers.history_buffer import HistoryBuffer as HistoryBuffer
 from .layers.mhc_skip import MHCSkip as MHCSkip
 from .layers.managed import MHCSequential as MHCSequential
@@ -6,3 +8,7 @@ from .utils.injection import inject_mhc as inject_mhc, inject_mhc_default as inj
 from .utils.profiling import ForwardProfiler as ForwardProfiler
 from .utils.compat import compile_model as compile_model, autocast_context as autocast_context
 from .presets import get_preset as get_preset
+
+logger = logging.getLogger("mhc")
+if not logger.handlers:
+    logger.addHandler(logging.NullHandler())

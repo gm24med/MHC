@@ -1,4 +1,5 @@
 from .seed import set_seed as set_seed
+from .logging import get_logger as get_logger
 from .tensor_ops import ensure_list as ensure_list, get_last_k as get_last_k
 from .injection import inject_mhc as inject_mhc, inject_mhc_default as inject_mhc_default
 from .profiling import ForwardProfiler as ForwardProfiler

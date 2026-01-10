@@ -28,7 +28,8 @@ class MHCSequential(nn.Module):
         mode: str = "mhc",
         constraint: str = "simplex",
         epsilon: float = 0.1,
-        detach_history: bool = True
+        detach_history: bool = True,
+        clear_history_each_forward: bool = True
     ) -> None:
         """Initializes the MHCSequential container.
 
@@ -40,10 +41,12 @@ class MHCSequential(nn.Module):
             epsilon: Identity preservation epsilon. Defaults to 0.1.
             detach_history: Whether to detach history tensors. Recommended to be
                 True for long sequential chains to avoid memory issues.
+            clear_history_each_forward: Whether to reset history at each forward.
         """
         super().__init__()
         self.wrapped_modules = nn.ModuleList()
         self.skip_layers = nn.ModuleList()
+        self.clear_history_each_forward = clear_history_each_forward
         self.history_buffer = HistoryBuffer(
             max_history=max_history,
             detach_history=detach_history
@@ -69,7 +72,8 @@ class MHCSequential(nn.Module):
         Returns:
             torch.Tensor: The final output of the sequential stack.
         """
-        self.history_buffer.clear()
+        if self.clear_history_each_forward:
+            self.history_buffer.clear()
 
         # Initial state x_0
         self.history_buffer.append(x)

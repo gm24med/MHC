@@ -24,3 +24,13 @@ Ensures that the latest state receives at least a minimum weight $\epsilon$:
 
 ### 3. Matrix Mixing
 Uses a learnable matrix instead of scalar weights, allowing for more complex historical feature mixing.
+
+## Shape Compatibility
+
+All states in a mixing window must share compatible shapes. `MHCSkip` can optionally
+project limited mismatches with `auto_project=True`, but it is not a general adapter.
+
+## Shape Compatibility
+
+All states in a mixing window must share compatible shapes. `MHCSkip` can optionally
+project limited mismatches with `auto_project=True`, but it is not a general adapter.

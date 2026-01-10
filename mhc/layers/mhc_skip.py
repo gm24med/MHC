@@ -124,8 +124,8 @@ class MHCSkip(nn.Module):
             if h.shape != x.shape:
                 if not self.auto_project:
                     raise RuntimeError(
-                        f"Shape mismatch in MHCSkip: current input shape {x.shape} "
-                        f"does not match history state shape {h.shape}. "
+                        f"{self.__class__.__name__} shape mismatch: current input shape "
+                        f"{x.shape} does not match history state shape {h.shape}. "
                         "Enable auto_project or ensure dimensions match."
                     )
                 h = self._project_history([h], x)[0]
@@ -135,8 +135,8 @@ class MHCSkip(nn.Module):
         if any(h.shape != x.shape for h in hist_window):
             if not self.auto_project:
                 raise RuntimeError(
-                    f"Shape mismatch in MHCSkip: current input shape {x.shape} "
-                    "does not match history state shape. "
+                    f"{self.__class__.__name__} shape mismatch: current input shape "
+                    f"{x.shape} does not match history state shape. "
                     "Enable auto_project or ensure dimensions match."
                 )
             hist_window = self._project_history(hist_window, x)
@@ -162,8 +162,8 @@ class MHCSkip(nn.Module):
             h_state = hist_window[i]
             if h_state.shape != x.shape:
                 raise RuntimeError(
-                    f"Shape mismatch in MHCSkip: current input shape {x.shape} "
-                    f"does not match history state shape {h_state.shape}. "
+                    f"{self.__class__.__name__} shape mismatch: current input shape "
+                    f"{x.shape} does not match history state shape {h_state.shape}. "
                     "Ensure all layers in a Hyper-Connection block preserve dimensions."
                 )
             history_mix = history_mix + alpha * h_state

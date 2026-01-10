@@ -32,6 +32,7 @@ class MHCConv2d(nn.Module):
         constraint: Constraint type for mhc mode. Default: 'simplex'
         epsilon: Minimum weight for identity preservation. Default: 0.1
         temperature: Softmax temperature. Default: 1.0
+        detach_history: Whether to detach history tensors. Default: True
 
     Example:
         >>> conv = MHCConv2d(3, 64, kernel_size=3, padding=1, max_history=4)
@@ -55,7 +56,8 @@ class MHCConv2d(nn.Module):
         mode: str = "mhc",
         constraint: str = "simplex",
         epsilon: float = 0.1,
-        temperature: float = 1.0
+        temperature: float = 1.0,
+        detach_history: bool = True
     ):
         super().__init__()
 
@@ -75,7 +77,7 @@ class MHCConv2d(nn.Module):
 
         self.history_buffer = HistoryBuffer(
             max_history=max_history,
-            detach_history=True
+            detach_history=detach_history
         )
 
         # Projection layer if input/output channels differ
@@ -103,16 +105,11 @@ class MHCConv2d(nn.Module):
 
         # If we need projection and have history, project historical states
         if self.needs_projection and history:
-            # Project input to match output dimensions
-            x_proj = self.projection(x)
-            # Update history with projected version
-            if len(history) == 0:
-                self.history_buffer.append(x_proj)
-                history = [x_proj]
-            else:
-                # Project all history states
-                history = [self.projection(h) if h.shape != out.shape else h
-                          for h in history]
+            history = [self.projection(h) if h.shape != out.shape else h
+                      for h in history]
+            self.history_buffer.clear()
+            for h_state in history:
+                self.history_buffer.append(h_state)
 
         # Apply mHC skip
         if history:

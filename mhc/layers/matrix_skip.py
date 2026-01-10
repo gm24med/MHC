@@ -9,9 +9,13 @@ class MatrixMHCSkip(nn.Module):
     Instead of a single scalar per history element, this layer uses a
     learnable mixing matrix. It can be constrained to be doubly stochastic.
 
+    Notes:
+        - History tensors must share the same shape.
+        - All non-batch dimensions are flattened during mixing, then reshaped.
+
     Attributes:
         max_history (int): Max history window.
-        mixing_matrix (nn.Parameter): Learnable (K, K) or (K, D) matrix.
+        mixing_matrix (nn.Parameter): Learnable (K, K) matrix.
     """
     def __init__(
         self,
@@ -38,6 +42,18 @@ class MatrixMHCSkip(nn.Module):
         # Stack history into (Batch, K, Dim)
         # Assuming last dim is features
         # For simplicity, we assume history tensors have same shape
+        base_shape = hist_window[0].shape
+        if any(h.shape != base_shape for h in hist_window):
+            raise RuntimeError(
+                f"{self.__class__.__name__} requires all history states to share shape; "
+                f"got {[h.shape for h in hist_window]}."
+            )
+        if base_shape != x.shape:
+            raise RuntimeError(
+                f"{self.__class__.__name__} expects x to match history shape; "
+                f"got x={x.shape}, history={base_shape}."
+            )
+
         H = torch.stack(hist_window, dim=1) # (B, K, ...)
 
         logits = self.mixing_logits[-K:, -K:]
