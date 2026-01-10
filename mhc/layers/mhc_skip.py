@@ -53,7 +53,7 @@ class MHCSkip(nn.Module):
         self.constraint = constraint
         self.epsilon = epsilon
         self.temperature = temperature
-        
+
         self.mixing_logits = nn.Parameter(torch.zeros(max_history))
         self._reset_parameters(init)
 
@@ -82,7 +82,7 @@ class MHCSkip(nn.Module):
         hist_window = history[-self.max_history:]
         K = len(hist_window)
         logits = self.mixing_logits[-K:]
-        
+
         if self.mode == "hc":
             alphas = torch.softmax(logits / self.temperature, dim=-1)
         elif self.mode == "mhc":
@@ -107,5 +107,5 @@ class MHCSkip(nn.Module):
                     "Ensure all layers in a Hyper-Connection block preserve dimensions."
                 )
             history_mix = history_mix + alpha * h_state
-            
+
         return x + history_mix
