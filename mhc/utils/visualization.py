@@ -9,10 +9,8 @@ import torch.nn as nn
 import matplotlib.pyplot as plt
 import numpy as np
 from typing import Optional, Dict, List, Tuple
-from pathlib import Path
 
 from ..layers.mhc_skip import MHCSkip
-from ..layers.managed import MHCSequential
 
 
 def extract_mixing_weights(model: nn.Module) -> Dict[str, torch.Tensor]:

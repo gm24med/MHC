@@ -54,7 +54,7 @@ def demo_mixing_weights_plot():
     _ = model(x)
 
     # Plot mixing weights
-    fig = plot_mixing_weights(model, save_path="mixing_weights.png")
+    plot_mixing_weights(model, save_path="mixing_weights.png")
     print("✓ Mixing weights heatmap saved to 'mixing_weights.png'")
     print("  This shows how each layer weights different historical states")
 
@@ -79,7 +79,7 @@ def demo_gradient_flow_plot():
     y = torch.randn(8, 64)
 
     # Plot gradient flow
-    fig = plot_gradient_flow(
+    plot_gradient_flow(
         model,
         x,
         target=y,
@@ -110,12 +110,12 @@ def demo_history_contribution_plot():
     first_layer_weights = weights[first_layer_name]
 
     # Plot
-    fig = plot_history_contribution(
+    plot_history_contribution(
         first_layer_weights,
         layer_name=first_layer_name,
         save_path="history_contribution.png"
     )
-    print(f"✓ History contribution plot saved to 'history_contribution.png'")
+    print("✓ History contribution plot saved to 'history_contribution.png'")
     print(f"  Layer: {first_layer_name}")
     print(f"  Weights: {first_layer_weights.numpy()}")
     print("  Shows how much each historical state contributes")
@@ -175,7 +175,7 @@ def demo_training_dashboard():
             print(f"  Epoch {epoch+1}/{num_epochs}, Loss: {avg_loss:.4f}")
 
     # Create dashboard
-    fig = create_training_dashboard(
+    create_training_dashboard(
         metrics,
         save_path="training_dashboard.png"
     )

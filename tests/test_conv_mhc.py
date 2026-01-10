@@ -41,8 +41,8 @@ class TestMHCConv2d:
         x = torch.randn(4, 16, 32, 32)
 
         # Multiple forward passes
-        for i in range(5):
-            out = conv(x)
+        for _ in range(5):
+            _ = conv(x)
 
         # Should have max_history states
         assert len(conv.history_buffer) == 4
@@ -115,7 +115,7 @@ class TestMHCBasicBlock:
 
         # Multiple forward passes
         for _ in range(5):
-            out = block(x)
+            _ = block(x)
 
         assert len(block.history_buffer) == 4
 
@@ -177,7 +177,7 @@ class TestMHCBottleneck:
         x = torch.randn(8, 256, 32, 32)
 
         for _ in range(5):
-            out = block(x)
+            _ = block(x)
 
         assert len(block.history_buffer) == 4
 
@@ -237,7 +237,7 @@ class TestConv2DIntegration:
 
         # Run many forward passes
         for _ in range(20):
-            out = block(x)
+            _ = block(x)
 
         # History should be limited to max_history
         assert len(block.history_buffer) == 4

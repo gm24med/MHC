@@ -6,7 +6,6 @@ Hyper-Connections, enabling computer vision tasks with richer skip connections.
 
 import torch
 import torch.nn as nn
-from typing import Optional, List
 
 from .mhc_skip import MHCSkip
 from .history_buffer import HistoryBuffer
