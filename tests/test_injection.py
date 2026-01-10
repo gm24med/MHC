@@ -34,3 +34,15 @@ def test_recursive_injection():
     # Check that both nested and top-level linears are wrapped
     assert "InjectedMHC" in str(model.net[0].__class__)
     assert "InjectedMHC" in str(model.head.__class__)
+
+def test_injection_shape_change_resets_history():
+    model = nn.Sequential(
+        nn.Linear(10, 8),
+        nn.ReLU(),
+        nn.Linear(8, 8),
+    )
+    inject_mhc(model, target_types=nn.Linear, max_history=3)
+
+    x = torch.randn(4, 10)
+    out = model(x)
+    assert out.shape == (4, 8)
