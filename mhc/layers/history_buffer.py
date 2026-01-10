@@ -47,7 +47,7 @@ class HistoryBuffer:
         Returns:
             List[torch.Tensor]: The list of historical states.
         """
-        return self.buffer
+        return list(self.buffer)
 
     def clear(self) -> None:
         """Removes all states from the buffer."""
