@@ -54,7 +54,7 @@ class MatrixMHCSkip(nn.Module):
                 f"got x={x.shape}, history={base_shape}."
             )
 
-        H = torch.stack(hist_window, dim=1) # (B, K, ...)
+        H = torch.stack(hist_window, dim=1)  # (B, K, ...)
 
         logits = self.mixing_logits[-K:, -K:]
 
