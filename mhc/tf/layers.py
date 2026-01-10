@@ -69,7 +69,7 @@ class TFMHCSkip(tf.keras.layers.Layer):
             init = tf.concat(
                 [tf.fill((self.max_history - 1,), -10.0), tf.zeros((1,))], axis=0
             )
-            self.set_weights([init.numpy()])
+            self.mixing_logits.assign(tf.cast(init, self.mixing_logits.dtype))
         super().build(input_shape)
 
     def _build_projection(self, history: tf.Tensor, x: tf.Tensor) -> tf.keras.layers.Layer:
