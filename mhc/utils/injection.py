@@ -95,3 +95,19 @@ def inject_mhc(
         model.register_forward_pre_hook(_clear_on_forward)
 
     return model
+
+def inject_mhc_default(
+    model: nn.Module,
+    max_history: int = 4,
+    clear_on_forward: bool = True,
+    **mhc_kwargs
+) -> nn.Module:
+    """Inject mHC into common layer types (Linear, Conv2d, LayerNorm)."""
+    target_types = [nn.Linear, nn.Conv2d, nn.LayerNorm]
+    return inject_mhc(
+        model,
+        target_types=target_types,
+        max_history=max_history,
+        clear_on_forward=clear_on_forward,
+        **mhc_kwargs
+    )

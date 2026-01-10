@@ -50,3 +50,11 @@ def test_mhc_skip_no_history():
     # According to our implementation, it returns x if history is empty.
     out = mhc(x, [])
     assert torch.allclose(out, x)
+
+def test_mhc_skip_auto_project():
+    mhc = MHCSkip(mode="mhc", max_history=3, auto_project=True)
+    x = torch.randn(2, 4)
+    history = [torch.randn(2, 8), torch.randn(2, 8)]
+
+    out = mhc(x, history)
+    assert out.shape == x.shape
