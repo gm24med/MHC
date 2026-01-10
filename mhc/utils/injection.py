@@ -22,7 +22,23 @@ class InjectedMHC(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         out = self.base_module(x)
-        out = self.skip(out, self.history_buffer.get())
+        history = self.history_buffer.get()
+
+        if history and any(h.shape != out.shape for h in history):
+            # Shape changes break skip mixing; reset history for the new shape.
+            self.history_buffer.clear()
+            history = []
+
+        if not history:
+            # Seed with input when shapes match; otherwise start from output.
+            if x.shape == out.shape:
+                self.history_buffer.append(x)
+                history = [x]
+            else:
+                self.history_buffer.append(out)
+                return out
+
+        out = self.skip(out, history)
         self.history_buffer.append(out)
         return out
 
@@ -30,6 +46,7 @@ def inject_mhc(
     model: nn.Module,
     target_types: Union[Type[nn.Module], List[Type[nn.Module]]],
     max_history: int = 4,
+    clear_on_forward: bool = True,
     **mhc_kwargs
 ) -> nn.Module:
     """Automatically injects Hyper-Connections into a model.
@@ -41,6 +58,7 @@ def inject_mhc(
         model: The PyTorch model to modify.
         target_types: The module class(es) to detect and wrap (e.g., nn.Linear).
         max_history: Max history for the injected skips.
+        clear_on_forward: If True, clears shared history at each model forward.
         **mhc_kwargs: Arguments passed to MHCSkip.
         
     Returns:
@@ -70,5 +88,10 @@ def inject_mhc(
         # This is a bit tricky. Usually, you clear at the start of a sequence.
         
     model.clear_mhc_history = clear_history
+
+    if clear_on_forward:
+        def _clear_on_forward(_module, _inputs):
+            history_buffer.clear()
+        model.register_forward_pre_hook(_clear_on_forward)
     
     return model
