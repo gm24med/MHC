@@ -197,9 +197,9 @@ For even richer historical feature mixing:
 from mhc.layers import MatrixMHCSkip
 
 skip = MatrixMHCSkip(
-    feature_dim=64,
     max_history=4,
-    constraint="doubly_stochastic"
+    doubly_stochastic=True,
+    iterations=10
 )
 ```
 
@@ -210,7 +210,23 @@ skip = MatrixMHCSkip(
 - **[Core Concepts](docs/concepts.md)** - Understanding hyper-connections
 - **[API Reference](docs/api.md)** - Complete API documentation
 - **[Examples](examples/)** - Runnable code examples
-- **[Tutorials](examples/tutorials/)** - Step-by-step guides
+- **[Tutorials](examples/)** - Step-by-step guides
+
+### TensorFlow (Optional)
+
+```bash
+pip install "mhc[tf]"
+```
+
+```python
+from mhc.tf import TFMHCSequential
+```
+
+### Visualization (Optional)
+
+```bash
+pip install "mhc[viz]"
+```
 
 ---
 

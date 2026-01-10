@@ -1,4 +1,5 @@
 import torch
+import pytest
 from mhc.constraints.matrix import project_doubly_stochastic
 from mhc.layers.matrix_skip import MatrixMHCSkip
 
@@ -18,3 +19,12 @@ def test_matrix_mhc_skip_forward():
 
     out = mhc(x, history)
     assert out.shape == (2, 10)
+
+
+def test_matrix_mhc_skip_shape_mismatch():
+    mhc = MatrixMHCSkip(max_history=2)
+    x = torch.randn(2, 10)
+    history = [torch.randn(2, 12), torch.randn(2, 10)]
+
+    with pytest.raises(RuntimeError):
+        _ = mhc(x, history)
