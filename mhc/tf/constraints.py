@@ -25,7 +25,9 @@ def project_doubly_stochastic(
     temperature: float = 1.0
 ) -> tf.Tensor:
     """Sinkhorn projection to a doubly stochastic matrix."""
-    m = tf.exp(logits / temperature)
+    scaled = logits / temperature
+    scaled = scaled - tf.reduce_max(scaled, axis=-1, keepdims=True)
+    m = tf.exp(scaled)
     for _ in range(iterations):
         m = m / (tf.reduce_sum(m, axis=-1, keepdims=True) + 1e-9)
         m = m / (tf.reduce_sum(m, axis=-2, keepdims=True) + 1e-9)

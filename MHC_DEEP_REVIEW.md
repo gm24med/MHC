@@ -32,6 +32,7 @@ Reviewed PyTorch core layers, constraints, history buffer, injection, conv/ResNe
 ### 4) Matrix mixing semantics and stability
 - `MatrixMHCSkip` assumes stackable history and flattens dimensions, which is not documented and may be surprising for conv tensors (`mhc/layers/matrix_skip.py`).
 - `project_doubly_stochastic` uses `exp(logits / temperature)` directly; large logits can overflow (`mhc/constraints/matrix.py`, `mhc/tf/constraints.py`).
+  - **Status**: fixed by stabilizing logits with max-subtraction before exp in both PyTorch and TF.
 
 ### 5) TF integration gaps
 - `TFMHCSequential` stores layers in `self.layers` (conflicts with Keras conventions); should rename to `wrapped_layers`.
