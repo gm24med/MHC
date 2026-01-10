@@ -20,21 +20,33 @@ pip install -e .
 uv add mhc
 ```
 
-### 3-Line Integration
+### High-Level Usage (Recommended)
+
+Use `MHCSequential` to automatically manage history buffers without any manual loop logic:
 
 ```python
-import torch
-from mhc import MHCSkip, HistoryBuffer
+import torch.nn as nn
+from mhc import MHCSequential
 
-# 1. Initialize the layer and a history buffer
-mhc_skip = MHCSkip(mode="mhc", max_history=4, constraint="simplex")
-buffer = HistoryBuffer(max_history=4)
+model = MHCSequential([
+    nn.Linear(64, 64),
+    nn.ReLU(),
+    nn.Linear(64, 32)
+], max_history=4)
 
-# 2. In your model loop
-for layer in layers:
-    x = layer(x)
-    x = mhc_skip(x, buffer.get()) # Mix current state with history
-    buffer.append(x)              # Update history
+x = torch.randn(1, 64)
+out = model(x) # Done! History is managed internally.
+```
+
+### Automatic Model Transformation
+
+Inject Hyper-Connections into any existing model:
+
+```python
+from mhc import inject_mhc
+
+model = my_existing_resnet()
+inject_mhc(model, target_types=nn.Conv2d, max_history=4)
 ```
 
 ---
@@ -49,14 +61,16 @@ $$x_{l+1} = f_l(x_l) + \sum_{k=0}^{l} \alpha_{l,k} \, x_k$$
 To prevent unstable amplification and preserve the identity-mapping property, `mhc` enforces constraints on the mixing weights $\alpha$:
 - **Simplex**: Ensures weights are non-negative and sum to 1 (convex combination).
 - **Identity-Preserving**: Guarantees a minimum weight on the most recent state.
+- **Matrix Mixing**: Advanced historical feature mixing via doubly stochastic constraints.
 
 ---
 
 ## 🛠 Features
 
-- **Drop-in Compatibility**: Works with any PyTorch module (Transformers, CNNs, MLPs).
+- **Transparent History**: Automated buffer management via `MHCSequential`.
+- **Model Injection**: One-line transformation of existing models.
 - **Stability First**: Built-in identity-preservation and norm-bounding.
-- **Modern Tooling**: Native support for `uv`, `pytest`, and `ruff`.
+- **Modern Tooling**: Native support for `uv`, `pytest`, `ruff`, and `mkdocs`.
 
 ---
 
@@ -72,8 +86,9 @@ uv run pytest
 
 - [x] **v0.1**: Core `MHCSkip` & `HistoryBuffer`
 - [x] **v0.2**: Simplex & Identity Constraints
-- [ ] **v0.3**: Doubly Stochastic (Matrix Mixing)
-- [ ] **v0.4**: Deep Stability Benchmark Suite
+- [x] **v0.3**: Matrix Mixing (Doubly Stochastic)
+- [x] **v0.4**: Managed Layers & Model Injection
+- [ ] **v0.5**: Deep Stability Benchmark Suite
 
 ---
 
