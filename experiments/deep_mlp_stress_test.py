@@ -17,10 +17,10 @@ class DeepMLP(nn.Module):
         for i, layer in enumerate(self.layers):
             x = layer(x)
             x = self.activation(x)
-            
+
             # Mix with history
             # In this simple setup, we use a separate buffer per layer for simplicity
-            # OR one could use a single global history. 
+            # OR one could use a single global history.
             # For a stress test, layer-wise history is easier to track.
             hist = self.buffers[i].get()
             x = self.skips[i](x, hist)
@@ -33,12 +33,12 @@ def run_experiment(args):
     print(f"Running on {device} | Mode: {args.tag} | Layers: {args.layers}")
 
     model = DeepMLP(
-        num_layers=args.layers, 
-        mode=args.mode, 
-        constraint=args.constraint, 
+        num_layers=args.layers,
+        mode=args.mode,
+        constraint=args.constraint,
         max_history=args.max_history
     ).to(device)
-    
+
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
     criterion = nn.MSELoss()
 
@@ -51,16 +51,16 @@ def run_experiment(args):
         optimizer.zero_grad()
         output = model(x_train)
         loss = criterion(output, y_train)
-        
+
         if torch.isnan(loss):
             print(f"Diverged at step {step} (NaN loss)")
             return {"status": "diverged", "step": step}
-            
+
         loss.backward()
-        
+
         # Log gradient norm of the first layer to check for vanishing/exploding gradients
         first_layer_grad_norm = model.layers[0].weight.grad.norm().item()
-        
+
         optimizer.step()
 
         if step % 50 == 0:
@@ -80,6 +80,6 @@ if __name__ == "__main__":
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--tag", type=str, default="mhc-simplex")
-    
+
     args = parser.parse_args()
     run_experiment(args)

@@ -38,17 +38,17 @@ class MHCSequential(nn.Module):
             mode: Mixing mode ("mhc", "hc", "residual"). Defaults to "mhc".
             constraint: Geometric constraint type. Defaults to "simplex".
             epsilon: Identity preservation epsilon. Defaults to 0.1.
-            detach_history: Whether to detach history tensors. Recommended to be 
+            detach_history: Whether to detach history tensors. Recommended to be
                 True for long sequential chains to avoid memory issues.
         """
         super().__init__()
         self.wrapped_modules = nn.ModuleList()
         self.skip_layers = nn.ModuleList()
         self.history_buffer = HistoryBuffer(
-            max_history=max_history, 
+            max_history=max_history,
             detach_history=detach_history
         )
-        
+
         for module in modules:
             self.wrapped_modules.append(module)
             self.skip_layers.append(
@@ -70,18 +70,18 @@ class MHCSequential(nn.Module):
             torch.Tensor: The final output of the sequential stack.
         """
         self.history_buffer.clear()
-        
+
         # Initial state x_0
         self.history_buffer.append(x)
-        
+
         for module, skip in zip(self.wrapped_modules, self.skip_layers):
             # Apply module transformation
             f_x = module(x)
-            
+
             # Mix with history
             x = skip(f_x, self.history_buffer.get())
-            
+
             # Update history with the mixed state
             self.history_buffer.append(x)
-            
+
         return x

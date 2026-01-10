@@ -9,7 +9,7 @@ def test_set_seed():
     set_seed(42)
     b = torch.randn(5)
     assert torch.equal(a, b)
-    
+
     np_a = np.random.randn(5)
     set_seed(42)
     np_b = np.random.randn(5)
