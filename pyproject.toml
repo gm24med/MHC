@@ -17,9 +17,12 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "pytest",
-    "ruff",
-    "mypy",
+    "pytest >= 7.0",
+    "ruff >= 0.1.0",
+    "mypy >= 1.0.0",
+    "mkdocs >= 1.5.0",
+    "mkdocs-material >= 9.0.0",
+    "mkdocstrings[python] >= 0.23.0",
 ]
 
 [tool.setuptools.packages.find]
