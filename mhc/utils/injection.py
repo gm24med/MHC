@@ -47,6 +47,7 @@ def inject_mhc(
     target_types: Union[Type[nn.Module], List[Type[nn.Module]]],
     max_history: int = 4,
     clear_on_forward: bool = True,
+    history_scope: str = "module",
     **mhc_kwargs
 ) -> nn.Module:
     """Automatically injects Hyper-Connections into a model.
@@ -59,6 +60,8 @@ def inject_mhc(
         target_types: The module class(es) to detect and wrap (e.g., nn.Linear).
         max_history: Max history for the injected skips.
         clear_on_forward: If True, clears shared history at each model forward.
+        history_scope: "global" shares one buffer across all injected layers.
+            "module" creates an independent buffer per injected layer.
         **mhc_kwargs: Arguments passed to MHCSkip.
 
     Returns:
@@ -67,13 +70,24 @@ def inject_mhc(
     if isinstance(target_types, type):
         target_types = [target_types]
 
-    history_buffer = HistoryBuffer(max_history=max_history, detach_history=True)
+    buffers: List[HistoryBuffer] = []
+
+    def _new_buffer() -> HistoryBuffer:
+        buffer = HistoryBuffer(max_history=max_history, detach_history=True)
+        buffers.append(buffer)
+        return buffer
+
+    if history_scope not in {"global", "module"}:
+        raise ValueError(f"Unknown history_scope: {history_scope}")
+
+    shared_buffer = _new_buffer() if history_scope == "global" else None
 
     def _replace_recursive(module: nn.Module):
         for name, child in module.named_children():
             if any(isinstance(child, t) for t in target_types):
                 # Replace with wrapper
-                wrapper = InjectedMHC(child, history_buffer, max_history=max_history, **mhc_kwargs)
+                buffer = shared_buffer if shared_buffer is not None else _new_buffer()
+                wrapper = InjectedMHC(child, buffer, max_history=max_history, **mhc_kwargs)
                 setattr(module, name, wrapper)
             else:
                 _replace_recursive(child)
@@ -82,7 +96,8 @@ def inject_mhc(
 
     # Attach clear_history method to the model for convenience
     def clear_history():
-        history_buffer.clear()
+        for buffer in buffers:
+            buffer.clear()
         # Initial x_0 is usually needed, but in this automated case,
         # we append the output of the first injected layer.
         # This is a bit tricky. Usually, you clear at the start of a sequence.
@@ -91,7 +106,8 @@ def inject_mhc(
 
     if clear_on_forward:
         def _clear_on_forward(_module, _inputs):
-            history_buffer.clear()
+            for buffer in buffers:
+                buffer.clear()
         model.register_forward_pre_hook(_clear_on_forward)
 
     return model
