@@ -12,8 +12,6 @@ license = { text = "MIT" }
 dependencies = [
     "torch>=2.0.0",
     "numpy",
-    "pytest>=8.4.2",
-    "matplotlib>=3.5.0",
 ]
 
 [project.optional-dependencies]
@@ -22,12 +20,16 @@ dev = [
     "ruff >= 0.1.0",
     "mypy >= 1.0.0",
     "pre-commit >= 3.0.0",
+    "matplotlib >= 3.5.0",
     "mkdocs >= 1.5.0",
     "mkdocs-material >= 9.0.0",
     "mkdocstrings[python] >= 0.23.0",
 ]
 tf = [
     "tensorflow>=2.12",
+]
+viz = [
+    "matplotlib>=3.5.0",
 ]
 
 [tool.setuptools.packages.find]
