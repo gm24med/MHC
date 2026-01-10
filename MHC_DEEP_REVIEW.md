@@ -23,7 +23,6 @@ Reviewed PyTorch core layers, constraints, history buffer, injection, conv/ResNe
 - `MHCSequential` always clears history on each forward, which blocks recurrent use without custom handling (`mhc/layers/managed.py`).
 - `MHCConv2d` hard-codes `detach_history=True` without a parameter override (`mhc/layers/conv_mhc.py`).
   - **Status**: fixed by exposing `detach_history` in `MHCConv2d`.
-  - **Status**: `HistoryBuffer.get()` now returns a copy to avoid external mutation.
 
 ### 3) Projection logic and shape mismatch handling
 - `MHCSkip(auto_project)` only supports limited shape changes and is not documented in user-facing docs (`mhc/layers/mhc_skip.py`).
