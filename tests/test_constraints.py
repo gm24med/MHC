@@ -1,5 +1,4 @@
 import torch
-import pytest
 from mhc.constraints import project_simplex, project_identity_preserving
 
 def test_project_simplex_properties():

@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from typing import Iterable, Optional, List
+from typing import Iterable
 from .mhc_skip import MHCSkip
 from .history_buffer import HistoryBuffer
 

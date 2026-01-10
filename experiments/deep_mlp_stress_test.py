@@ -15,7 +15,6 @@ class DeepMLP(nn.Module):
 
     def forward(self, x):
         for i, layer in enumerate(self.layers):
-            identity = x
             x = layer(x)
             x = self.activation(x)
             

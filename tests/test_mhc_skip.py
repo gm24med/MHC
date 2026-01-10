@@ -1,5 +1,4 @@
 import torch
-import pytest
 from mhc import MHCSkip
 
 def test_mhc_skip_shapes():

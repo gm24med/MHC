@@ -1,5 +1,4 @@
 import torch
-import pytest
 from mhc.constraints.matrix import project_doubly_stochastic
 from mhc.layers.matrix_skip import MatrixMHCSkip
 

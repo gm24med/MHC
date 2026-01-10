@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from typing import List, Optional
+from typing import List
 from ..constraints import project_simplex, project_identity_preserving
 
 class MHCSkip(nn.Module):

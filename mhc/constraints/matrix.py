@@ -1,5 +1,4 @@
 import torch
-import torch.nn.functional as F
 
 def project_doubly_stochastic(
     logits: torch.Tensor, 

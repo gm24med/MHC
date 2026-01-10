@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from typing import Type, List, Optional, Union
+from typing import Type, List, Union
 from ..layers.mhc_skip import MHCSkip
 from ..layers.history_buffer import HistoryBuffer
 
