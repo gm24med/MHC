@@ -35,9 +35,9 @@ class HistoryBuffer:
         """
         if self.detach_history:
             x = x.detach()
-        
+
         self.buffer.append(x)
-        
+
         if len(self.buffer) > self.max_history:
             self.buffer.pop(0)
 
