@@ -26,6 +26,9 @@ dev = [
     "mkdocs-material >= 9.0.0",
     "mkdocstrings[python] >= 0.23.0",
 ]
+tf = [
+    "tensorflow>=2.12",
+]
 
 [tool.setuptools.packages.find]
 where = ["."]
