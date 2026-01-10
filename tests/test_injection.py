@@ -48,6 +48,16 @@ def test_inject_mhc_default_common_layers():
     assert "InjectedMHC" in str(model[1].__class__)
     assert "InjectedMHC" in str(model[2].__class__)
 
+
+def test_inject_mhc_history_scope_module():
+    model = nn.Sequential(nn.Linear(4, 4), nn.ReLU(), nn.Linear(4, 4))
+    inject_mhc(model, target_types=nn.Linear, history_scope="module")
+
+    first = model[0]
+    second = model[2]
+
+    assert first.history_buffer is not second.history_buffer
+
 def test_injection_shape_change_resets_history():
     model = nn.Sequential(
         nn.Linear(10, 8),
