@@ -6,9 +6,11 @@ Hyper-Connections, enabling computer vision tasks with richer skip connections.
 
 import torch
 import torch.nn as nn
+from typing import Optional
 
 from .mhc_skip import MHCSkip
 from .history_buffer import HistoryBuffer
+from ..config import resolve_default
 
 
 class MHCConv2d(nn.Module):
@@ -52,12 +54,12 @@ class MHCConv2d(nn.Module):
         dilation: int = 1,
         groups: int = 1,
         bias: bool = True,
-        max_history: int = 4,
-        mode: str = "mhc",
-        constraint: str = "simplex",
-        epsilon: float = 0.1,
-        temperature: float = 1.0,
-        detach_history: bool = True
+        max_history: Optional[int] = None,
+        mode: Optional[str] = None,
+        constraint: Optional[str] = None,
+        epsilon: Optional[float] = None,
+        temperature: Optional[float] = None,
+        detach_history: Optional[bool] = None
     ):
         super().__init__()
 
@@ -68,16 +70,16 @@ class MHCConv2d(nn.Module):
         )
 
         self.skip = MHCSkip(
-            mode=mode,
-            max_history=max_history,
-            constraint=constraint,
-            epsilon=epsilon,
-            temperature=temperature
+            mode=resolve_default(mode, "mode"),
+            max_history=resolve_default(max_history, "max_history"),
+            constraint=resolve_default(constraint, "constraint"),
+            epsilon=resolve_default(epsilon, "epsilon"),
+            temperature=resolve_default(temperature, "temperature")
         )
 
         self.history_buffer = HistoryBuffer(
-            max_history=max_history,
-            detach_history=detach_history
+            max_history=resolve_default(max_history, "max_history"),
+            detach_history=resolve_default(detach_history, "detach_history")
         )
 
         # Projection layer if input/output channels differ

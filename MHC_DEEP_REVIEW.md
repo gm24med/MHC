@@ -82,23 +82,4 @@ Reviewed PyTorch core layers, constraints, history buffer, injection, conv/ResNe
 ## Next milestones
 - Add optional tracing for buffer sizes and mixing weights per module.
 - Explore graph-safe TF history management for tf.function.
-1) Injection safety (fixed) — default per-layer buffers, optional global scope for legacy behavior.
-2) Expose `detach_history` in `MHCConv2d`.
-3) Stabilize doubly-stochastic projection (log-sum-exp / subtract max before exp).
-4) Document TF limitations and add TF usage docs.
-
-### Medium
-5) Return a copy in `HistoryBuffer.get()` to prevent external mutation.
-6) Validate `MatrixMHCSkip` history shapes and document flattening semantics.
-7) Improve shape mismatch errors with module path context.
-
-### Low
-8) Move `pytest`/`matplotlib` to optional extras (`dev`, `viz`).
-9) Make `set_seed` logging optional.
-10) Align docs with real examples and API.
-
-## Next milestones
-- Injection safety ✅ (done)
-- TensorFlow docs + example
-- Stability for matrix mixing
-- Packaging cleanup (deps and extras)
+- Centralize defaults through MHCConfig + TOML loading (done in this branch).

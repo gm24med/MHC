@@ -25,6 +25,10 @@ This page provides an overview of the main classes and functions in the `mhc` pa
 ::: mhc.utils.injection.inject_mhc
 ::: mhc.utils.seed.set_seed
 ::: mhc.utils.logging.get_logger
+::: mhc.config.MHCConfig
+::: mhc.config.get_default_config
+::: mhc.config.set_default_config
+::: mhc.config.load_config_from_toml
 
 ## TensorFlow (optional)
 

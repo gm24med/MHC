@@ -1,8 +1,10 @@
 import torch
 import torch.nn as nn
-from typing import Type, List, Union
+from typing import Type, List, Union, Optional
+
 from ..layers.mhc_skip import MHCSkip
 from ..layers.history_buffer import HistoryBuffer
+from ..config import resolve_default
 
 class InjectedMHC(nn.Module):
     """A wrapper that pairs a module with an MHCSkip layer.
@@ -45,15 +47,15 @@ class InjectedMHC(nn.Module):
 def inject_mhc(
     model: nn.Module,
     target_types: Union[Type[nn.Module], List[Type[nn.Module]]],
-    max_history: int = 4,
-    clear_on_forward: bool = True,
-    history_scope: str = "module",
+    max_history: Optional[int] = None,
+    clear_on_forward: Optional[bool] = None,
+    history_scope: Optional[str] = None,
     **mhc_kwargs
 ) -> nn.Module:
     """Automatically injects Hyper-Connections into a model.
 
     Replaces all instances of `target_types` with a wrapper that adds mHC-skip
-    and shares a single HistoryBuffer.
+    and manages history buffers based on `history_scope`.
 
     Args:
         model: The PyTorch model to modify.
@@ -73,10 +75,15 @@ def inject_mhc(
     buffers: List[HistoryBuffer] = []
 
     def _new_buffer() -> HistoryBuffer:
-        buffer = HistoryBuffer(max_history=max_history, detach_history=True)
+        buffer = HistoryBuffer(
+            max_history=resolve_default(max_history, "max_history"),
+            detach_history=resolve_default(None, "detach_history")
+        )
         buffers.append(buffer)
         return buffer
 
+    history_scope = resolve_default(history_scope, "history_scope")
+    history_scope = resolve_default(history_scope, "history_scope")
     if history_scope not in {"global", "module"}:
         raise ValueError(f"Unknown history_scope: {history_scope}")
 
@@ -87,7 +94,12 @@ def inject_mhc(
             if any(isinstance(child, t) for t in target_types):
                 # Replace with wrapper
                 buffer = shared_buffer if shared_buffer is not None else _new_buffer()
-                wrapper = InjectedMHC(child, buffer, max_history=max_history, **mhc_kwargs)
+                wrapper = InjectedMHC(
+                    child,
+                    buffer,
+                    max_history=resolve_default(max_history, "max_history"),
+                    **mhc_kwargs
+                )
                 setattr(module, name, wrapper)
             else:
                 _replace_recursive(child)
@@ -104,7 +116,7 @@ def inject_mhc(
 
     model.clear_mhc_history = clear_history
 
-    if clear_on_forward:
+    if resolve_default(clear_on_forward, "clear_history_each_forward"):
         def _clear_on_forward(_module, _inputs):
             for buffer in buffers:
                 buffer.clear()
@@ -114,8 +126,8 @@ def inject_mhc(
 
 def inject_mhc_default(
     model: nn.Module,
-    max_history: int = 4,
-    clear_on_forward: bool = True,
+    max_history: Optional[int] = None,
+    clear_on_forward: Optional[bool] = None,
     **mhc_kwargs
 ) -> nn.Module:
     """Inject mHC into common layer types (Linear, Conv2d, LayerNorm)."""

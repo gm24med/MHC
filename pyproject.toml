@@ -31,6 +31,9 @@ tf = [
 viz = [
     "matplotlib>=3.5.0",
 ]
+config = [
+    "tomli>=2.0.0; python_version < '3.11'",
+]
 
 [tool.setuptools.packages.find]
 where = ["."]

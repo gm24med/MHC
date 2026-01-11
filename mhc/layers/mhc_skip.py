@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from typing import List, Optional
 from ..constraints import project_simplex, project_identity_preserving
+from ..config import resolve_default
 
 class MHCSkip(nn.Module):
     """Manifold-Constrained Hyper-Connections (mHC) Skip Layer.
@@ -30,13 +31,13 @@ class MHCSkip(nn.Module):
 
     def __init__(
         self,
-        mode: str = "mhc",
-        max_history: int = 4,
-        constraint: str = "simplex",
-        epsilon: float = 0.1,
-        temperature: float = 1.0,
-        init: str = "identity",
-        auto_project: bool = False
+        mode: Optional[str] = None,
+        max_history: Optional[int] = None,
+        constraint: Optional[str] = None,
+        epsilon: Optional[float] = None,
+        temperature: Optional[float] = None,
+        init: Optional[str] = None,
+        auto_project: Optional[bool] = None
     ) -> None:
         """Initializes the MHCSkip layer.
 
@@ -50,16 +51,16 @@ class MHCSkip(nn.Module):
             auto_project: If True, project mismatched history shapes to match x.
         """
         super().__init__()
-        self.mode = mode
-        self.max_history = max_history
-        self.constraint = constraint
-        self.epsilon = epsilon
-        self.temperature = temperature
-        self.auto_project = auto_project
+        self.mode = resolve_default(mode, "mode")
+        self.max_history = resolve_default(max_history, "max_history")
+        self.constraint = resolve_default(constraint, "constraint")
+        self.epsilon = resolve_default(epsilon, "epsilon")
+        self.temperature = resolve_default(temperature, "temperature")
+        self.auto_project = resolve_default(auto_project, "auto_project")
         self.projection: Optional[nn.Module] = None
 
-        self.mixing_logits = nn.Parameter(torch.zeros(max_history))
-        self._reset_parameters(init)
+        self.mixing_logits = nn.Parameter(torch.zeros(self.max_history))
+        self._reset_parameters(resolve_default(init, "init"))
 
     def _build_projection(self, history: torch.Tensor, x: torch.Tensor) -> nn.Module:
         if history.dim() == 4 and x.dim() == 4:

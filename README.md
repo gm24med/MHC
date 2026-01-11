@@ -215,6 +215,7 @@ skip = MatrixMHCSkip(
 - **[Examples](examples/)** - Runnable code examples
 - **[Tutorials](examples/)** - Step-by-step guides
 
+## ⚙️ Configuration
 ### TensorFlow (Optional)
 
 ```bash
@@ -238,6 +239,34 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("mhc").info("mHC logging enabled")
+```
+
+### Central Configuration (Optional)
+
+```toml
+[tool.mhc]
+max_history = 6
+mode = "mhc"
+constraint = "identity"
+epsilon = 0.1
+temperature = 1.0
+detach_history = true
+clear_history_each_forward = true
+auto_project = false
+history_scope = "module"
+```
+
+```python
+from mhc import load_config_from_toml, set_default_config
+
+config = load_config_from_toml("pyproject.toml")
+set_default_config(config)
+```
+
+For Python <3.11, install TOML support:
+
+```bash
+pip install "mhc[config]"
 ```
 
 ---
