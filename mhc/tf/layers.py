@@ -200,6 +200,11 @@ class TFMHCSequential(tf.keras.layers.Layer):
         ]
 
     def call(self, x: tf.Tensor) -> tf.Tensor:
+        if not tf.executing_eagerly():
+            raise RuntimeError(
+                "TFMHCSequential stores history in Python lists and is eager-only. "
+                "Avoid wrapping it in tf.function."
+            )
         self.history.clear()
         self.history.append(x)
         for layer, skip in zip(self.wrapped_layers, self.skips):

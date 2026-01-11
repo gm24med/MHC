@@ -107,6 +107,9 @@ class MHCConv2d(nn.Module):
         if self.needs_projection and history:
             history = [self.projection(h) if h.shape != out.shape else h
                       for h in history]
+            self.history_buffer.clear()
+            for h_state in history:
+                self.history_buffer.append(h_state)
 
         # Apply mHC skip
         if history:

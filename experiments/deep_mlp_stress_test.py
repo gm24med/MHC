@@ -1,9 +1,18 @@
+import argparse
+import logging
+import time
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
+
 from mhc import MHCSkip, HistoryBuffer, set_seed
-import argparse
-import time
+
+logger = logging.getLogger("mhc.experiments.deep_mlp")
+
+
+def _log(message: str) -> None:
+    logger.info(message)
 
 class DeepMLP(nn.Module):
     def __init__(self, input_dim=64, hidden_dim=64, num_layers=20, mode="mhc", constraint="simplex", max_history=4):
@@ -30,7 +39,7 @@ class DeepMLP(nn.Module):
 def run_experiment(args):
     set_seed(args.seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"Running on {device} | Mode: {args.tag} | Layers: {args.layers}")
+    _log(f"Running on {device} | Mode: {args.tag} | Layers: {args.layers}")
 
     model = DeepMLP(
         num_layers=args.layers,
@@ -53,7 +62,7 @@ def run_experiment(args):
         loss = criterion(output, y_train)
 
         if torch.isnan(loss):
-            print(f"Diverged at step {step} (NaN loss)")
+            _log(f"Diverged at step {step} (NaN loss)")
             return {"status": "diverged", "step": step}
 
         loss.backward()
@@ -64,13 +73,14 @@ def run_experiment(args):
         optimizer.step()
 
         if step % 50 == 0:
-            print(f"Step {step:4d} | Loss: {loss.item():.6f} | GradNorm (L0): {first_layer_grad_norm:.6f}")
+            _log(f"Step {step:4d} | Loss: {loss.item():.6f} | GradNorm (L0): {first_layer_grad_norm:.6f}")
 
     end_time = time.time()
-    print(f"Finished {args.steps} steps in {end_time - start_time:.2f}s")
+    _log(f"Finished {args.steps} steps in {end_time - start_time:.2f}s")
     return {"status": "success", "loss": loss.item()}
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", type=str, default="mhc", choices=["residual", "hc", "mhc"])
     parser.add_argument("--constraint", type=str, default="simplex", choices=["simplex", "identity"])

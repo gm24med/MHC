@@ -28,6 +28,15 @@ from mhc.tf import TFMHCSequential
 pip install "mhc[viz]"
 ```
 
+## Logging
+
+```python
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("mhc").info("mHC logging enabled")
+```
+
 ## Quickstart
 
 ```python

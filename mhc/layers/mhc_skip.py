@@ -162,8 +162,8 @@ class MHCSkip(nn.Module):
             h_state = hist_window[i]
             if h_state.shape != x.shape:
                 raise RuntimeError(
-                    f"Shape mismatch in MHCSkip: current input shape {x.shape} "
-                    f"does not match history state shape {h_state.shape}. "
+                    f"{self.__class__.__name__} shape mismatch: current input shape "
+                    f"{x.shape} does not match history state shape {h_state.shape}. "
                     "Ensure all layers in a Hyper-Connection block preserve dimensions."
                 )
             history_mix = history_mix + alpha * h_state

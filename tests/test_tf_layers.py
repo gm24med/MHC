@@ -19,3 +19,15 @@ def test_tf_mhc_sequential():
     x = tf.random.normal((2, 8))
     out = model(x)
     assert out.shape == x.shape
+
+
+def test_tf_mhc_sequential_no_tf_function():
+    model = TFMHCSequential([tf.keras.layers.Dense(4)], max_history=2)
+
+    @tf.function
+    def wrapped(t):
+        return model(t)
+
+    x = tf.random.normal((2, 4))
+    with pytest.raises(RuntimeError):
+        _ = wrapped(x)

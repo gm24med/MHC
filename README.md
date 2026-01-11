@@ -181,6 +181,9 @@ skip = MHCSkip(
     init="identity"     # Initialization strategy
 )
 
+# Note: auto_project can handle limited shape changes (same spatial dims).
+# It is not a general shape adapter.
+
 # In your forward pass
 history_buffer = HistoryBuffer(max_history=4)
 for layer in layers:
@@ -226,6 +229,15 @@ from mhc.tf import TFMHCSequential
 
 ```bash
 pip install "mhc[viz]"
+```
+
+### Logging
+
+```python
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("mhc").info("mHC logging enabled")
 ```
 
 ---
