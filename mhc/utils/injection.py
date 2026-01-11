@@ -83,6 +83,7 @@ def inject_mhc(
         return buffer
 
     history_scope = resolve_default(history_scope, "history_scope")
+    history_scope = resolve_default(history_scope, "history_scope")
     if history_scope not in {"global", "module"}:
         raise ValueError(f"Unknown history_scope: {history_scope}")
 

@@ -32,3 +32,16 @@ def test_mhc_sequential_equivalence_to_residual():
     # Layer 1: f(x_0) = 1. Skip: (x_0 + f(x_0)) = 2.
     # Layer 2: f(x_1) = 2. Skip: (x_1 + f(x_1)) = 4.
     assert torch.allclose(out, torch.tensor(4.0))
+
+
+def test_mhc_sequential_no_clear_history():
+    layers = [nn.Linear(4, 4)]
+    model = MHCSequential(layers, max_history=3, clear_history_each_forward=False)
+
+    x = torch.randn(2, 4)
+    _ = model(x)
+    first_len = len(model.history_buffer)
+    _ = model(x)
+    second_len = len(model.history_buffer)
+
+    assert second_len >= first_len

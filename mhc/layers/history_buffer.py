@@ -1,5 +1,7 @@
-import torch
 from typing import List
+
+import logging
+import torch
 
 class HistoryBuffer:
     """A buffer for storing and managing previous network states for Hyper-Connections.
@@ -40,6 +42,8 @@ class HistoryBuffer:
 
         if len(self.buffer) > self.max_history:
             self.buffer.pop(0)
+            logger = logging.getLogger("mhc.history")
+            logger.debug("HistoryBuffer trimmed to max_history=%s", self.max_history)
 
     def get(self) -> List[torch.Tensor]:
         """Retrieves all currently stored states in chronological order.
@@ -47,7 +51,7 @@ class HistoryBuffer:
         Returns:
             List[torch.Tensor]: The list of historical states.
         """
-        return self.buffer
+        return list(self.buffer)
 
     def clear(self) -> None:
         """Removes all states from the buffer."""

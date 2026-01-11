@@ -4,6 +4,8 @@ This script demonstrates all visualization capabilities of the mHC library,
 including mixing weights heatmaps, gradient flow analysis, and training dashboards.
 """
 
+import logging
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -17,6 +19,12 @@ from mhc.utils.visualization import (
     create_training_dashboard,
     extract_mixing_weights
 )
+
+logger = logging.getLogger("mhc.examples.visualization")
+
+
+def _log(message: str) -> None:
+    logger.info(message)
 
 
 def create_sample_model(input_dim=64, hidden_dim=64, num_layers=5):
@@ -42,9 +50,9 @@ def create_sample_model(input_dim=64, hidden_dim=64, num_layers=5):
 
 def demo_mixing_weights_plot():
     """Demonstrate mixing weights visualization."""
-    print("\n" + "="*60)
-    print("Demo 1: Mixing Weights Heatmap")
-    print("="*60)
+    _log("\n" + "="*60)
+    _log("Demo 1: Mixing Weights Heatmap")
+    _log("="*60)
 
     set_seed(42)
     model = create_sample_model()
@@ -55,21 +63,21 @@ def demo_mixing_weights_plot():
 
     # Plot mixing weights
     plot_mixing_weights(model, save_path="mixing_weights.png")
-    print("✓ Mixing weights heatmap saved to 'mixing_weights.png'")
-    print("  This shows how each layer weights different historical states")
+    _log("✓ Mixing weights heatmap saved to 'mixing_weights.png'")
+    _log("  This shows how each layer weights different historical states")
 
     # Extract and print weights
     weights = extract_mixing_weights(model)
-    print(f"\n  Found {len(weights)} MHCSkip layers")
+    _log(f"\n  Found {len(weights)} MHCSkip layers")
     for name, alphas in list(weights.items())[:2]:  # Show first 2
-        print(f"  {name}: {alphas.numpy()}")
+        _log(f"  {name}: {alphas.numpy()}")
 
 
 def demo_gradient_flow_plot():
     """Demonstrate gradient flow visualization."""
-    print("\n" + "="*60)
-    print("Demo 2: Gradient Flow Analysis")
-    print("="*60)
+    _log("\n" + "="*60)
+    _log("Demo 2: Gradient Flow Analysis")
+    _log("="*60)
 
     set_seed(42)
     model = create_sample_model()
@@ -86,16 +94,16 @@ def demo_gradient_flow_plot():
         loss_fn=nn.MSELoss(),
         save_path="gradient_flow.png"
     )
-    print("✓ Gradient flow plot saved to 'gradient_flow.png'")
-    print("  This shows gradient magnitudes across all layers")
-    print("  Helps identify vanishing/exploding gradient issues")
+    _log("✓ Gradient flow plot saved to 'gradient_flow.png'")
+    _log("  This shows gradient magnitudes across all layers")
+    _log("  Helps identify vanishing/exploding gradient issues")
 
 
 def demo_history_contribution_plot():
     """Demonstrate history contribution visualization."""
-    print("\n" + "="*60)
-    print("Demo 3: History Contribution for Single Layer")
-    print("="*60)
+    _log("\n" + "="*60)
+    _log("Demo 3: History Contribution for Single Layer")
+    _log("="*60)
 
     set_seed(42)
     model = create_sample_model()
@@ -115,17 +123,17 @@ def demo_history_contribution_plot():
         layer_name=first_layer_name,
         save_path="history_contribution.png"
     )
-    print("✓ History contribution plot saved to 'history_contribution.png'")
-    print(f"  Layer: {first_layer_name}")
-    print(f"  Weights: {first_layer_weights.numpy()}")
-    print("  Shows how much each historical state contributes")
+    _log("✓ History contribution plot saved to 'history_contribution.png'")
+    _log(f"  Layer: {first_layer_name}")
+    _log(f"  Weights: {first_layer_weights.numpy()}")
+    _log("  Shows how much each historical state contributes")
 
 
 def demo_training_dashboard():
     """Demonstrate training dashboard with simulated training."""
-    print("\n" + "="*60)
-    print("Demo 4: Training Dashboard (Simulated Training)")
-    print("="*60)
+    _log("\n" + "="*60)
+    _log("Demo 4: Training Dashboard (Simulated Training)")
+    _log("="*60)
 
     set_seed(42)
     model = create_sample_model()
@@ -148,7 +156,7 @@ def demo_training_dashboard():
 
     # Simulate training
     num_epochs = 10
-    print(f"\n  Training for {num_epochs} epochs...")
+    _log(f"\n  Training for {num_epochs} epochs...")
 
     for epoch in range(num_epochs):
         epoch_loss = 0.0
@@ -172,27 +180,28 @@ def demo_training_dashboard():
             metrics['mixing_weights_history'].append(first_weights)
 
         if (epoch + 1) % 2 == 0:
-            print(f"  Epoch {epoch+1}/{num_epochs}, Loss: {avg_loss:.4f}")
+            _log(f"  Epoch {epoch+1}/{num_epochs}, Loss: {avg_loss:.4f}")
 
     # Create dashboard
     create_training_dashboard(
         metrics,
         save_path="training_dashboard.png"
     )
-    print("\n✓ Training dashboard saved to 'training_dashboard.png'")
-    print("  Shows loss curve and mixing weights evolution over training")
+    _log("\n✓ Training dashboard saved to 'training_dashboard.png'")
+    _log("  Shows loss curve and mixing weights evolution over training")
 
 
 def main():
     """Run all visualization demos."""
-    print("\n" + "="*60)
-    print("mHC Visualization Tools Demo")
-    print("="*60)
-    print("\nThis demo will create 4 visualization plots:")
-    print("  1. mixing_weights.png - Heatmap of mixing weights")
-    print("  2. gradient_flow.png - Gradient magnitudes across layers")
-    print("  3. history_contribution.png - Single layer contribution")
-    print("  4. training_dashboard.png - Training metrics dashboard")
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
+    _log("\n" + "="*60)
+    _log("mHC Visualization Tools Demo")
+    _log("="*60)
+    _log("\nThis demo will create 4 visualization plots:")
+    _log("  1. mixing_weights.png - Heatmap of mixing weights")
+    _log("  2. gradient_flow.png - Gradient magnitudes across layers")
+    _log("  3. history_contribution.png - Single layer contribution")
+    _log("  4. training_dashboard.png - Training metrics dashboard")
 
     # Run all demos
     demo_mixing_weights_plot()
@@ -200,14 +209,14 @@ def main():
     demo_history_contribution_plot()
     demo_training_dashboard()
 
-    print("\n" + "="*60)
-    print("All visualizations complete! ✓")
-    print("="*60)
-    print("\nCheck the current directory for the generated plots.")
-    print("These visualizations help you understand:")
-    print("  • How mHC mixes historical states")
-    print("  • Whether gradients flow properly")
-    print("  • How mixing patterns evolve during training")
+    _log("\n" + "="*60)
+    _log("All visualizations complete! ✓")
+    _log("="*60)
+    _log("\nCheck the current directory for the generated plots.")
+    _log("These visualizations help you understand:")
+    _log("  • How mHC mixes historical states")
+    _log("  • Whether gradients flow properly")
+    _log("  • How mixing patterns evolve during training")
 
 
 if __name__ == "__main__":

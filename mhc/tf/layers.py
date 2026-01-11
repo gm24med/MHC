@@ -170,7 +170,11 @@ class TFMatrixMHCSkip(tf.keras.layers.Layer):
 
 
 class TFMHCSequential(tf.keras.layers.Layer):
-    """Sequential container with automatic history management (eager-friendly)."""
+    """Sequential container with automatic history management (eager-friendly).
+
+    Note: This implementation is designed for eager execution and may not be
+    graph-safe under tf.function due to Python-side history storage.
+    """
 
     def __init__(
         self,
@@ -183,7 +187,7 @@ class TFMHCSequential(tf.keras.layers.Layer):
         **kwargs
     ) -> None:
         super().__init__(**kwargs)
-        self.layers = layers
+        self.wrapped_layers = layers
         self.history = TFHistoryBuffer(max_history=max_history, detach_history=detach_history)
         self.skips = [
             TFMHCSkip(
@@ -196,9 +200,14 @@ class TFMHCSequential(tf.keras.layers.Layer):
         ]
 
     def call(self, x: tf.Tensor) -> tf.Tensor:
+        if not tf.executing_eagerly():
+            raise RuntimeError(
+                "TFMHCSequential stores history in Python lists and is eager-only. "
+                "Avoid wrapping it in tf.function."
+            )
         self.history.clear()
         self.history.append(x)
-        for layer, skip in zip(self.layers, self.skips):
+        for layer, skip in zip(self.wrapped_layers, self.skips):
             out = layer(x)
             x = skip(out, self.history.get())
             self.history.append(x)

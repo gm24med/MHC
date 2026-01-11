@@ -1,9 +1,12 @@
-import torch
-import numpy as np
-import random
 import os
+import random
 
-def set_seed(seed: int = 42):
+import numpy as np
+import torch
+
+from .logging import get_logger
+
+def set_seed(seed: int = 42, verbose: bool = True):
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -12,4 +15,7 @@ def set_seed(seed: int = 42):
     os.environ['PYTHONHASHSEED'] = str(seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
-    print(f"Random seed set to: {seed}")
+    if verbose:
+        logger = get_logger("mhc.seed")
+        logger.info("Random seed set to: %s", seed)
+        print(f"Random seed set to: {seed}")

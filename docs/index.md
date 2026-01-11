@@ -39,7 +39,7 @@ pip install "mhc[config]"
 ```
 
 ## TensorFlow (Optional)
-
+Install the extra and use the TensorFlow layers:
 ```bash
 pip install "mhc[tf]"
 ```

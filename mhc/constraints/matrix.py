@@ -19,8 +19,10 @@ def project_doubly_stochastic(
     Returns:
         torch.Tensor: A doubly stochastic matrix.
     """
-    # Initial normalization (row-wise softmax)
-    M = torch.exp(logits / temperature)
+    # Stabilize logits before exp to reduce overflow risk
+    scaled = logits / temperature
+    scaled = scaled - scaled.amax(dim=-1, keepdim=True)
+    M = torch.exp(scaled)
 
     for _ in range(iterations):
         # Row normalization
