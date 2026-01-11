@@ -197,9 +197,9 @@ For even richer historical feature mixing:
 from mhc.layers import MatrixMHCSkip
 
 skip = MatrixMHCSkip(
-    feature_dim=64,
     max_history=4,
-    constraint="doubly_stochastic"
+    doubly_stochastic=True,
+    iterations=10
 )
 ```
 
@@ -210,7 +210,62 @@ skip = MatrixMHCSkip(
 - **[Core Concepts](docs/concepts.md)** - Understanding hyper-connections
 - **[API Reference](docs/api.md)** - Complete API documentation
 - **[Examples](examples/)** - Runnable code examples
-- **[Tutorials](examples/tutorials/)** - Step-by-step guides
+- **[Tutorials](examples/)** - Step-by-step guides
+
+## ⚙️ Configuration
+
+### TensorFlow (Optional)
+
+```bash
+pip install "mhc[tf]"
+```
+
+```python
+from mhc.tf import TFMHCSequential
+```
+
+### Visualization (Optional)
+
+```bash
+pip install "mhc[viz]"
+```
+
+### Logging
+
+```python
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("mhc").info("mHC logging enabled")
+```
+
+### Central Configuration (Optional)
+
+```toml
+[tool.mhc]
+max_history = 6
+mode = "mhc"
+constraint = "identity"
+epsilon = 0.1
+temperature = 1.0
+detach_history = true
+clear_history_each_forward = true
+auto_project = false
+history_scope = "module"
+```
+
+```python
+from mhc import load_config_from_toml, set_default_config
+
+config = load_config_from_toml("pyproject.toml")
+set_default_config(config)
+```
+
+For Python <3.11, install TOML support:
+
+```bash
+pip install "mhc[config]"
+```
 
 ---
 

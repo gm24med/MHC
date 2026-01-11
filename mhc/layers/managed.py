@@ -1,8 +1,10 @@
 import torch
 import torch.nn as nn
-from typing import Iterable
+from typing import Iterable, Optional
+
 from .mhc_skip import MHCSkip
 from .history_buffer import HistoryBuffer
+from ..config import resolve_default
 
 class MHCSequential(nn.Module):
     """A Sequential container that automatically manages Hyper-Connections.
@@ -24,11 +26,12 @@ class MHCSequential(nn.Module):
     def __init__(
         self,
         modules: Iterable[nn.Module],
-        max_history: int = 4,
-        mode: str = "mhc",
-        constraint: str = "simplex",
-        epsilon: float = 0.1,
-        detach_history: bool = True
+        max_history: Optional[int] = None,
+        mode: Optional[str] = None,
+        constraint: Optional[str] = None,
+        epsilon: Optional[float] = None,
+        detach_history: Optional[bool] = None,
+        clear_history_each_forward: Optional[bool] = None
     ) -> None:
         """Initializes the MHCSequential container.
 
@@ -40,23 +43,27 @@ class MHCSequential(nn.Module):
             epsilon: Identity preservation epsilon. Defaults to 0.1.
             detach_history: Whether to detach history tensors. Recommended to be
                 True for long sequential chains to avoid memory issues.
+            clear_history_each_forward: Whether to reset history at each forward.
         """
         super().__init__()
         self.wrapped_modules = nn.ModuleList()
         self.skip_layers = nn.ModuleList()
+        self.clear_history_each_forward = resolve_default(
+            clear_history_each_forward, "clear_history_each_forward"
+        )
         self.history_buffer = HistoryBuffer(
-            max_history=max_history,
-            detach_history=detach_history
+            max_history=resolve_default(max_history, "max_history"),
+            detach_history=resolve_default(detach_history, "detach_history")
         )
 
         for module in modules:
             self.wrapped_modules.append(module)
             self.skip_layers.append(
                 MHCSkip(
-                    mode=mode,
-                    max_history=max_history,
-                    constraint=constraint,
-                    epsilon=epsilon
+                    mode=resolve_default(mode, "mode"),
+                    max_history=resolve_default(max_history, "max_history"),
+                    constraint=resolve_default(constraint, "constraint"),
+                    epsilon=resolve_default(epsilon, "epsilon")
                 )
             )
 
@@ -69,7 +76,8 @@ class MHCSequential(nn.Module):
         Returns:
             torch.Tensor: The final output of the sequential stack.
         """
-        self.history_buffer.clear()
+        if self.clear_history_each_forward:
+            self.history_buffer.clear()
 
         # Initial state x_0
         self.history_buffer.append(x)

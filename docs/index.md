@@ -10,6 +10,59 @@ Hyper-Connections (HC) and mHC provide a way to mix historical network states to
 - **Easy integration**: Use `MHCSequential` or `inject_mhc` for transparent usage.
 - **Advanced features**: Support for Matrix Mixing and Doubly Stochastic constraints.
 
+## Configuration
+
+```toml
+[tool.mhc]
+max_history = 6
+mode = "mhc"
+constraint = "identity"
+epsilon = 0.1
+temperature = 1.0
+detach_history = true
+clear_history_each_forward = true
+auto_project = false
+history_scope = "module"
+```
+
+```python
+from mhc import load_config_from_toml, set_default_config
+
+config = load_config_from_toml("pyproject.toml")
+set_default_config(config)
+```
+
+For Python <3.11:
+
+```bash
+pip install "mhc[config]"
+```
+
+## TensorFlow (Optional)
+
+```bash
+pip install "mhc[tf]"
+```
+
+```python
+from mhc.tf import TFMHCSequential
+```
+
+## Visualization (Optional)
+
+```bash
+pip install "mhc[viz]"
+```
+
+## Logging
+
+```python
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("mhc").info("mHC logging enabled")
+```
+
 ## Quickstart
 
 ```python
