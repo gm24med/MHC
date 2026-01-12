@@ -99,25 +99,45 @@ class TFMHCSkip(tf.keras.layers.Layer):
             self.projection = self._build_projection(mismatched[0], x)
         return [self.projection(h) if h.shape != x.shape else h for h in history]
 
-    def call(self, x: tf.Tensor, history: List[tf.Tensor]) -> tf.Tensor:
-        if not history:
-            return x
+    def call(self, x: tf.Tensor, history) -> tf.Tensor:
+        if isinstance(history, tf.Tensor):
+            if tf.shape(history)[0] == 0:
+                return x
+            hist_tensor = history
+            hist_list = None
+        else:
+            if not history:
+                return x
+            hist_list = history
+            hist_tensor = tf.stack(history, axis=0)
         if self.mode == "residual":
-            h = history[-1]
+            h = hist_tensor[-1] if hist_list is None else hist_list[-1]
             if h.shape != x.shape:
                 if not self.auto_project:
                     raise RuntimeError("Shape mismatch in TFMHCSkip. Enable auto_project.")
                 h = self._project_history([h], x)[0]
             return x + h
 
-        hist_window = history[-self.max_history :]
-        if any(h.shape != x.shape for h in hist_window):
-            if not self.auto_project:
-                raise RuntimeError("Shape mismatch in TFMHCSkip. Enable auto_project.")
-            hist_window = self._project_history(hist_window, x)
+        if hist_list is None:
+            hist_window = hist_tensor
+            if tf.reduce_any(tf.not_equal(tf.shape(hist_tensor)[1:], tf.shape(x))):
+                if not self.auto_project:
+                    raise RuntimeError("Shape mismatch in TFMHCSkip. Enable auto_project.")
+                hist_list = self._project_history(tf.unstack(hist_tensor, axis=0), x)
+                hist_window = tf.stack(hist_list, axis=0)
+        else:
+            hist_window = hist_list[-self.max_history :]
+            if any(h.shape != x.shape for h in hist_window):
+                if not self.auto_project:
+                    raise RuntimeError("Shape mismatch in TFMHCSkip. Enable auto_project.")
+                hist_window = self._project_history(hist_window, x)
 
-        k = len(hist_window)
-        logits = self.mixing_logits[-k:]
+        if hist_list is None:
+            k = tf.shape(hist_window)[0]
+            logits = self.mixing_logits[:k]
+        else:
+            k = len(hist_window)
+            logits = self.mixing_logits[-k:]
         if self.mode == "hc":
             alphas = tf.nn.softmax(logits / self.temperature, axis=-1)
         elif self.mode == "mhc":
@@ -132,9 +152,12 @@ class TFMHCSkip(tf.keras.layers.Layer):
         else:
             raise ValueError(f"Unknown mode: {self.mode}")
 
-        history_mix = 0.0
-        for idx, alpha in enumerate(tf.unstack(alphas)):
-            history_mix = history_mix + alpha * hist_window[idx]
+        if hist_list is None:
+            history_mix = tf.tensordot(alphas, hist_window, axes=[[0], [0]])
+        else:
+            history_mix = 0.0
+            for idx, alpha in enumerate(tf.unstack(alphas)):
+                history_mix = history_mix + alpha * hist_window[idx]
 
         return x + history_mix
 
