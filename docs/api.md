@@ -35,3 +35,5 @@ This page provides an overview of the main classes and functions in the `mhc` pa
 ::: mhc.tf.TFMHCSkip
 ::: mhc.tf.TFMatrixMHCSkip
 ::: mhc.tf.TFMHCSequential
+::: mhc.tf.TFMHCSequentialGraph
+::: mhc.tf.TFHistoryBufferGraph

@@ -81,5 +81,5 @@ Reviewed PyTorch core layers, constraints, history buffer, injection, conv/ResNe
 
 ## Next milestones
 - Add optional tracing for buffer sizes and mixing weights per module.
-- Explore graph-safe TF history management for tf.function.
+- Explore graph-safe TF history management for tf.function. (done in this branch)
 - Centralize defaults through MHCConfig + TOML loading (done in this branch).

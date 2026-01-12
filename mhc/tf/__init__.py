@@ -8,4 +8,6 @@ from .layers import (
     TFMHCSkip as TFMHCSkip,
     TFMatrixMHCSkip as TFMatrixMHCSkip,
     TFMHCSequential as TFMHCSequential,
+    TFMHCSequentialGraph as TFMHCSequentialGraph,
 )
+from .graph import TFHistoryBufferGraph as TFHistoryBufferGraph

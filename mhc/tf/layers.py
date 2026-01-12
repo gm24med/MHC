@@ -7,6 +7,7 @@ from .constraints import (
     project_identity_preserving,
     project_doubly_stochastic,
 )
+from .graph import TFHistoryBufferGraph
 
 
 class TFHistoryBuffer:
@@ -215,3 +216,42 @@ class TFMHCSequential(tf.keras.layers.Layer):
 
     def clear_history(self) -> None:
         self.history.clear()
+
+
+class TFMHCSequentialGraph(tf.keras.layers.Layer):
+    """Graph-safe sequential container using TensorArray history."""
+    def __init__(
+        self,
+        layers: List[tf.keras.layers.Layer],
+        max_history: int = 4,
+        mode: str = "mhc",
+        constraint: str = "simplex",
+        epsilon: float = 0.1,
+        detach_history: bool = True,
+        **kwargs
+    ) -> None:
+        super().__init__(**kwargs)
+        self.wrapped_layers = layers
+        self.history = TFHistoryBufferGraph(
+            max_history=max_history,
+            detach_history=detach_history
+        )
+        self.skips = [
+            TFMHCSkip(
+                mode=mode,
+                max_history=max_history,
+                constraint=constraint,
+                epsilon=epsilon,
+            )
+            for _ in layers
+        ]
+
+    def call(self, x: tf.Tensor) -> tf.Tensor:
+        self.history.reset()
+        self.history.append(x)
+        for layer, skip in zip(self.wrapped_layers, self.skips):
+            out = layer(x)
+            hist = self.history.tail(skip.max_history)
+            x = skip(out, tf.unstack(hist, axis=0))
+            self.history.append(x)
+        return x

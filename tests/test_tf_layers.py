@@ -2,7 +2,7 @@ import pytest
 
 tf = pytest.importorskip("tensorflow")
 
-from mhc.tf import TFMHCSkip, TFMHCSequential  # noqa: E402
+from mhc.tf import TFMHCSkip, TFMHCSequential, TFMHCSequentialGraph  # noqa: E402
 
 
 def test_tf_mhc_skip_basic():
@@ -31,3 +31,15 @@ def test_tf_mhc_sequential_no_tf_function():
     x = tf.random.normal((2, 4))
     with pytest.raises(RuntimeError):
         _ = wrapped(x)
+
+
+def test_tf_mhc_sequential_graph():
+    model = TFMHCSequentialGraph([tf.keras.layers.Dense(4)], max_history=2)
+
+    @tf.function
+    def wrapped(t):
+        return model(t)
+
+    x = tf.random.normal((2, 4))
+    out = wrapped(x)
+    assert out.shape == (2, 4)

@@ -226,6 +226,12 @@ pip install "mhc[tf]"
 from mhc.tf import TFMHCSequential
 ```
 
+### TensorFlow Graph-Safe History
+
+```python
+from mhc.tf import TFMHCSequentialGraph
+```
+
 ### Visualization (Optional)
 
 ```bash
