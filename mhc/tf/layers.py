@@ -275,6 +275,6 @@ class TFMHCSequentialGraph(tf.keras.layers.Layer):
         for layer, skip in zip(self.wrapped_layers, self.skips):
             out = layer(x)
             hist = self.history.tail(skip.max_history)
-            x = skip(out, tf.unstack(hist, axis=0))
+            x = skip(out, hist)
             self.history.append(x)
         return x
