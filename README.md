@@ -91,24 +91,29 @@ inject_mhc(model, target_types=nn.Conv2d, max_history=4)
 
 Standard residual connections only use the **immediate previous state**:
 
-```
-x_{l+1} = f(x_l) + x_l
-```
+$$
+x_{l+1} = x_l + f(x_l)
+$$
 
-This works well, but limits information flow to just one previous layer.
+This works well, but it limits information flow to a single layer and makes very deep stacks depend on repeated, short-range skips.
 
 ### The mHC Solution
 
-mHC learns to **mix a sliding window** of past representations:
+mHC learns a **history-aware skip** that mixes a sliding window of past representations:
 
-```
-x_{l+1} = f(x_l) + Σ α_k · x_k
-```
+$$
+x_{l+1} = f(x_l) + \sum_{k=l-H+1}^{l} \alpha_{l,k}\, x_k
+$$
 
-Where the mixing weights `α` are:
-- **Learned during training** (not fixed)
-- **Constrained to a manifold** (simplex, identity-preserving, or doubly stochastic)
-- **Guaranteed to preserve stability** (no gradient explosion)
+Where:
+- $H$ is the history length (the size of the sliding window).
+- $\alpha_{l,k}$ are **learned mixing weights** for layer $l$.
+- The weights are **geometrically constrained** to stay stable:
+  - **Simplex**: nonnegative, sums to 1 (convex mixing).
+  - **Identity-preserving**: maintains a strong direct path.
+  - **Doubly stochastic**: balanced mixing across history.
+
+This gives deeper layers a richer, but controlled, access to earlier features without destabilizing gradients.
 
 ### When to Use mHC?
 
@@ -118,6 +123,12 @@ Where the mixing weights `α` are:
 | **Training stability issues** | Geometric constraints prevent gradient explosion |
 | **Limited data** | Richer feature mixing improves generalization |
 | **Fine-tuning pre-trained models** | Inject mHC to boost performance |
+
+### What Changes in Practice
+
+- **Same forward API**: mHC plugs into existing backbones without changing training loops.
+- **More expressive skips**: each layer can reweight multiple past states instead of a single residual.
+- **Controlled mixing**: constraints keep the skip path well-behaved, even for long histories.
 
 ---
 
