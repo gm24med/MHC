@@ -1,6 +1,5 @@
 <div align="center">
 
-![mHC Banner](docs/images/banner.png)
 
 <img src="docs/images/logo.png" alt="mHC Logo" width="200"/>
 
