@@ -289,6 +289,20 @@ class TFMHCSequentialGraph(tf.keras.layers.Layer):
             for _ in layers
         ]
 
+    def build(self, input_shape):
+        x_shape = tf.TensorShape(input_shape)
+        for layer, skip in zip(self.wrapped_layers, self.skips):
+            if not layer.built:
+                layer.build(x_shape)
+            try:
+                out_shape = layer.compute_output_shape(x_shape)
+            except Exception:
+                out_shape = x_shape
+            if not skip.built:
+                skip.build(out_shape)
+            x_shape = out_shape
+        super().build(input_shape)
+
     def call(self, x: tf.Tensor) -> tf.Tensor:
         self.history.reset()
         self.history.append(x)
