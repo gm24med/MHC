@@ -36,9 +36,23 @@ class MHCSkip(nn.Module):
         init: Optional[str] = None,
         auto_project: Optional[bool] = None,
         use_gating: bool = False,
-        prune_threshold: float = 0.0
+        prune_threshold: float = 0.0,
+        stochastic: bool = False
     ) -> None:
-        """Initializes the MHCSkip layer."""
+        """Initializes the MHCSkip layer.
+
+        Args:
+            mode: Mixing strategy choice. Defaults to "mhc".
+            max_history: Window size for history mixing. Defaults to 4.
+            constraint: Mathematical constraint for mHC mode. Defaults to "simplex".
+            epsilon: Minimum identity weight for epsilon-bound constraints. Defaults to 0.1.
+            temperature: Sharpness factor for softmax. Defaults to 1.0.
+            init: Initialization strategy for mixing weights ("identity" or "uniform").
+            auto_project: If True, project mismatched history shapes to match x.
+            use_gating: If True, learns a global gate to modulate history contribution.
+            prune_threshold: Weights below this value will be zeroed out.
+            stochastic: If True, use stochastic mixing (Gumbel-Softmax).
+        """
         super().__init__()
         self.mode = resolve_default(mode, "mode")
         self.max_history = resolve_default(max_history, "max_history")
@@ -48,6 +62,7 @@ class MHCSkip(nn.Module):
         self.auto_project = resolve_default(auto_project, "auto_project")
         self.use_gating = use_gating
         self.prune_threshold = prune_threshold
+        self.stochastic = stochastic
         self.projection: Optional[nn.Module] = None
 
         self.mixing_logits = nn.Parameter(torch.zeros(self.max_history))
@@ -106,7 +121,11 @@ class MHCSkip(nn.Module):
         K = len(hist_window)
         logits = self.mixing_logits[-K:]
 
-        if self.mode == "hc":
+        if self.stochastic and self.training:
+            alphas = torch.nn.functional.gumbel_softmax(
+                logits, tau=self.temperature, hard=False, dim=-1
+            )
+        elif self.mode == "hc":
             alphas = torch.softmax(logits / self.temperature, dim=-1)
         elif self.mode == "mhc":
             if self.constraint == "simplex":

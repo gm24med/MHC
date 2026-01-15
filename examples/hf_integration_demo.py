@@ -26,9 +26,10 @@ def vit_injection_demo():
 
     print(f"Injected model parameter count: {sum(p.numel() for p in model.parameters()):,}")
 
-    # 3. Running a forward pass
-    x = torch.randn(1, 197, 64) # (batch, seq, hidden)
-    output = model(x)
+    # 3. Test with dummy input
+    # ViT expects (batch, channels, height, width) -> (1, 3, 224, 224)
+    pixel_values = torch.randn(1, 3, 224, 224)
+    output = model(pixel_values)
 
     print(f"Forward pass successful. Output shape: {output.last_hidden_state.shape}")
     print("mHC history buffer is automatically managed via forward pre-hooks.")

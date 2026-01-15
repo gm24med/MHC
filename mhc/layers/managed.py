@@ -28,11 +28,13 @@ class MHCSequential(nn.Module):
         mode: Optional[str] = None,
         constraint: Optional[str] = None,
         epsilon: Optional[float] = None,
-        detach_history: Optional[bool] = None,
+        temperature: Optional[float] = None,
         clear_history_each_forward: Optional[bool] = None,
+        detach_history: Optional[bool] = None,
         use_gating: bool = False,
         use_checkpointing: bool = False,
-        prune_threshold: float = 0.0
+        prune_threshold: float = 0.0,
+        stochastic: bool = False
     ) -> None:
         """Initializes the MHCSequential container.
 
@@ -42,11 +44,13 @@ class MHCSequential(nn.Module):
             mode: Mixing mode ("mhc", "hc", "residual"). Defaults to "mhc".
             constraint: Geometric constraint type. Defaults to "simplex".
             epsilon: Identity preservation epsilon. Defaults to 0.1.
+            temperature: Sharpness factor for mixing weights. Defaults to 1.0.
             detach_history: Whether to detach history tensors.
             clear_history_each_forward: Whether to reset history at each forward.
             use_gating: Whether to use learnable gating for history contribution.
             use_checkpointing: If True, uses gradient checkpointing for each block.
             prune_threshold: Weights below this value will be zeroed out.
+            stochastic: If True, uses stochastic mixing.
         """
         super().__init__()
         self.use_checkpointing = use_checkpointing
@@ -68,8 +72,10 @@ class MHCSequential(nn.Module):
                     max_history=resolve_default(max_history, "max_history"),
                     constraint=resolve_default(constraint, "constraint"),
                     epsilon=resolve_default(epsilon, "epsilon"),
+                    temperature=resolve_default(temperature, "temperature"),
                     use_gating=use_gating,
-                    prune_threshold=prune_threshold
+                    prune_threshold=prune_threshold,
+                    stochastic=stochastic
                 )
             )
 
