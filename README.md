@@ -6,7 +6,7 @@
 
 # mhc — Manifold-Constrained Hyper-Connections
 
-**Richer skip connections for deeper, more stable neural networks.**
+**Honey Badger Stability for Deeper, More Stable Neural Networks.**
 
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![PyTorch 2.0+](https://img.shields.io/badge/pytorch-2.0+-ee4c2c.svg?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org/get-started/locally/)
@@ -21,7 +21,7 @@
 
 ## 🎯 What is mHC?
 
-`mhc` is a next-generation PyTorch library that reimagines residual connections. Instead of simple one-to-one skips, mHC learns to dynamically mix multiple historical network states through geometrically constrained manifolds.
+`mhc` is a next-generation PyTorch library that reimagines residual connections. Instead of simple one-to-one skips, mHC learns to dynamically mix multiple historical network states through geometrically constrained manifolds—bringing **Honey Badger toughness** to your gradients.
 
 <div align="center">
 
