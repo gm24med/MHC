@@ -226,6 +226,29 @@ skip = MatrixMHCSkip(
 - **[Examples](examples/)** - Runnable code examples
 - **[Tutorials](examples/)** - Step-by-step guides
 
+## 🌳 Codebase Arborescence
+
+High-level map of the repository to help you navigate quickly:
+
+```text
+MHC/
+├── mhc/                     # Core package
+│   ├── constraints/         # Simplex, identity, and matrix projections
+│   ├── layers/              # MHCSkip, MatrixMHCSkip, HistoryBuffer, managed layers
+│   ├── tf/                  # TensorFlow layers + graph-safe history
+│   ├── utils/               # Injection, logging, profiling, tensor ops, viz helpers
+│   ├── config.py            # Config loading + defaults
+│   ├── presets.py           # Named configuration presets
+│   └── version.py           # Package version
+├── tests/                   # PyTest suite
+├── docs/                    # Documentation sources (MkDocs)
+├── examples/                # Usage examples and tutorials
+├── experiments/             # Research notebooks and scripts
+├── mkdocs.yml               # Docs site configuration
+├── pyproject.toml           # Build, deps, tooling
+└── uv.lock                  # Locked dependencies for reproducibility
+```
+
 ## ⚙️ Configuration
 ### TensorFlow (Optional)
 
