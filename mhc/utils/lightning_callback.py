@@ -18,6 +18,7 @@ except ImportError:
 
 from ..layers.managed import MHCSequential
 from ..layers.mhc_skip import MHCSkip
+from .dashboard import log_to_wandb, log_to_tensorboard
 
 class MHCLightningCallback(Callback):
     """Automates mHC history management and logging for PyTorch Lightning.
@@ -70,11 +71,10 @@ class MHCLightningCallback(Callback):
             self._log_alphas(pl_module)
 
     def _log_alphas(self, pl_module: L.LightningModule):
+        # 1. Standard Lightning logging (scalars)
         for name, module in pl_module.named_modules():
             if isinstance(module, MHCSkip):
                 with torch.no_grad():
-                    # This is slightly simplified; in a real scenario we'd use visualization helpers
-                    # but we stay lightweight here.
                     if hasattr(module, "mixing_logits"):
                         weights = torch.softmax(module.mixing_logits / getattr(module, "temperature", 1.0), dim=-1)
                         # Log the latest skip weight as a proxy for stability
@@ -82,3 +82,20 @@ class MHCLightningCallback(Callback):
                         # Log entropy of weights as a measure of mixing diversity
                         entropy = -(weights * torch.log(weights + 1e-9)).sum()
                         pl_module.log(f"{self.prefix}/{name}/entropy", entropy, on_step=True)
+
+        # 2. Advanced dashboard logging (WandB/TensorBoard specific)
+        if hasattr(pl_module, "logger"):
+            logger = pl_module.logger
+            # Detect WandB
+            try:
+                import wandb
+                if wandb.run is not None:
+                    log_to_wandb(pl_module, prefix=self.prefix)
+            except ImportError:
+                pass
+
+            # Detect TensorBoard
+            if hasattr(logger, "experiment"):
+                from torch.utils.tensorboard import SummaryWriter # type: ignore
+                if isinstance(logger.experiment, SummaryWriter):
+                    log_to_tensorboard(logger.experiment, pl_module, pl_module.global_step, prefix=self.prefix)
