@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from typing import Iterable, Optional
 
+from torch.utils.checkpoint import checkpoint
 from .mhc_skip import MHCSkip
 from .history_buffer import HistoryBuffer
 from ..config import resolve_default
@@ -31,7 +32,9 @@ class MHCSequential(nn.Module):
         constraint: Optional[str] = None,
         epsilon: Optional[float] = None,
         detach_history: Optional[bool] = None,
-        clear_history_each_forward: Optional[bool] = None
+        clear_history_each_forward: Optional[bool] = None,
+        use_gating: bool = False,
+        use_checkpointing: bool = False
     ) -> None:
         """Initializes the MHCSequential container.
 
@@ -44,8 +47,11 @@ class MHCSequential(nn.Module):
             detach_history: Whether to detach history tensors. Recommended to be
                 True for long sequential chains to avoid memory issues.
             clear_history_each_forward: Whether to reset history at each forward.
+            use_gating: Whether to use learnable gating for history contribution.
+            use_checkpointing: If True, uses gradient checkpointing for each block.
         """
         super().__init__()
+        self.use_checkpointing = use_checkpointing
         self.wrapped_modules = nn.ModuleList()
         self.skip_layers = nn.ModuleList()
         self.clear_history_each_forward = resolve_default(
@@ -83,11 +89,17 @@ class MHCSequential(nn.Module):
         self.history_buffer.append(x)
 
         for module, skip in zip(self.wrapped_modules, self.skip_layers):
-            # Apply module transformation
-            f_x = module(x)
+            h_states = self.history_buffer.get()
 
-            # Mix with history
-            x = skip(f_x, self.history_buffer.get())
+            def block(input_x: torch.Tensor, *past_states: torch.Tensor) -> torch.Tensor:
+                f_x = module(input_x)
+                return skip(f_x, list(past_states))
+
+            if self.use_checkpointing and x.requires_grad:
+                # We use use_reentrant=False for better compatibility with current PyTorch
+                x = checkpoint(block, x, *h_states, use_reentrant=False)
+            else:
+                x = block(x, *h_states)
 
             # Update history with the mixed state
             self.history_buffer.append(x)
