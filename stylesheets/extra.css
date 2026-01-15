@@ -1,0 +1,21 @@
+/* Enlarge the header logo */
+.md-header__button.md-logo img {
+    height: 3.5rem !important;
+    /* Standard is 2rem */
+    width: auto !important;
+}
+
+/* Adjust top padding if needed for the larger logo */
+.md-header__inner {
+    height: 4.5rem;
+}
+
+/* Ensure the logo background is transparent using blending */
+.md-logo img {
+    mix-blend-mode: multiply;
+    /* Removes white background on colored headers */
+}
+
+.md-logo {
+    background: transparent !important;
+}
