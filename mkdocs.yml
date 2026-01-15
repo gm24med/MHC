@@ -1,6 +1,15 @@
-site_name: mhc Documentation
+site_name: "mHC: Manifold-Constrained Hyper-Connections"
 theme:
   name: material
+  logo: images/logo.png
+  favicon: images/logo.png
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
   palette:
     scheme: slate
     primary: indigo
@@ -8,8 +17,36 @@ theme:
 
 nav:
   - Home: index.md
-  - Core Concepts: concepts.md
-  - API Reference: api.md
+  - Starting Out:
+      - 10-Minute Quickstart: tutorials/quickstart.md
+      - Basic Usage: tutorials/basic_usage.md
+  - Core Concepts:
+      - What are Hyper-Connections?: concepts/hyper_connections.md
+      - Manifold Constraints: concepts/manifold_constraints.md
+      - Mathematical Derivation: concepts/mathematical_derivation.md
+      - The History Lifecycle: concepts/history_lifecycle.md
+      - The Stability Proof: concepts/stability.md
+  - Advanced Features:
+      - Dynamic History Gating: features/gating.md
+      - Memory Checkpointing: features/checkpointing.md
+      - Auto-Sparsification (Pruning): features/pruning.md
+      - Variational mHC: features/variational.md
+      - Matrix mHC (Experimental): features/matrix_mixing.md
+  - Framework Guides:
+      - PyTorch Lightning: guides/pytorch_lightning.md
+      - Computer Vision (Conv2D): guides/vision.md
+      - Hugging Face Transformers: guides/huggingface.md
+      - Custom Layers Integration: guides/custom_layers.md
+      - TensorFlow Support: guides/tensorflow.md
+      - Performance Tuning: guides/performance_optimization.md
+      - Testing & Benchmarking: guides/testing_and_benchmarking.md
+      - Advanced Customization: guides/advanced_customization.md
+      - Troubleshooting: guides/troubleshooting.md
+  - API Reference:
+      - Configuration: api/config.md
+      - Layers: api/layers.md
+      - Constraints: api/constraints.md
+      - Utilities: api/utils.md
 
 plugins:
   - mkdocstrings:
@@ -19,7 +56,15 @@ plugins:
             - import sys
             - sys.path.append(".")
 
+extra_javascript:
+  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML
+
+extra_css:
+  - stylesheets/extra.css
+
 markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
