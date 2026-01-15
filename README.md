@@ -12,7 +12,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![CI](https://github.com/gm24med/MHC/actions/workflows/ci.yml/badge.svg?style=for-the-badge)](https://github.com/gm24med/MHC/actions/workflows/ci.yml)
 
-[Documentation](https://github.com/gm24med/MHC/tree/main/docs) • [Examples](https://github.com/gm24med/MHC/tree/main/examples) • [Paper](#citation) • [Contributing](#contributing)
+[Documentation](https://gm24med.github.io/MHC/) • [Examples](https://github.com/gm24med/MHC/tree/main/examples) • [Paper](#citation) • [Contributing](#contributing)
 
 </div>
 
