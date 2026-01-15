@@ -1,4 +1,5 @@
 site_name: "mHC: Manifold-Constrained Hyper-Connections"
+site_url: "https://gm24med.github.io/MHC/"
 theme:
   name: material
   logo: images/logo.png
