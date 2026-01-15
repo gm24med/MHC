@@ -99,17 +99,31 @@ class TFMHCSkip(tf.keras.layers.Layer):
             self.projection = self._build_projection(mismatched[0], x)
         return [self.projection(h) if h.shape != x.shape else h for h in history]
 
-    def call(self, x: tf.Tensor, history) -> tf.Tensor:
-        if isinstance(history, tf.Tensor):
-            if tf.shape(history)[0] == 0:
-                return x
-            hist_tensor = history
-            hist_list = None
-        else:
-            if not history:
-                return x
-            hist_list = history
-            hist_tensor = tf.stack(history, axis=0)
+    def _maybe_project_tensor_history(self, hist_tensor: tf.Tensor, x: tf.Tensor) -> tf.Tensor:
+        if not self.auto_project:
+            tf.debugging.assert_equal(
+                tf.shape(hist_tensor)[1:],
+                tf.shape(x),
+                message="Shape mismatch in TFMHCSkip. Enable auto_project.",
+            )
+            return hist_tensor
+
+        def project():
+            hist_list = self._project_history(tf.unstack(hist_tensor, axis=0), x)
+            return tf.stack(hist_list, axis=0)
+
+        return tf.cond(
+            tf.reduce_any(tf.not_equal(tf.shape(hist_tensor)[1:], tf.shape(x))),
+            project,
+            lambda: hist_tensor,
+        )
+
+    def _call_with_history(
+        self,
+        x: tf.Tensor,
+        hist_tensor: tf.Tensor,
+        hist_list: Optional[List[tf.Tensor]],
+    ) -> tf.Tensor:
         if self.mode == "residual":
             h = hist_tensor[-1] if hist_list is None else hist_list[-1]
             if h.shape != x.shape:
@@ -119,12 +133,7 @@ class TFMHCSkip(tf.keras.layers.Layer):
             return x + h
 
         if hist_list is None:
-            hist_window = hist_tensor
-            if tf.reduce_any(tf.not_equal(tf.shape(hist_tensor)[1:], tf.shape(x))):
-                if not self.auto_project:
-                    raise RuntimeError("Shape mismatch in TFMHCSkip. Enable auto_project.")
-                hist_list = self._project_history(tf.unstack(hist_tensor, axis=0), x)
-                hist_window = tf.stack(hist_list, axis=0)
+            hist_window = self._maybe_project_tensor_history(hist_tensor, x)
         else:
             hist_window = hist_list[-self.max_history :]
             if any(h.shape != x.shape for h in hist_window):
@@ -160,6 +169,17 @@ class TFMHCSkip(tf.keras.layers.Layer):
                 history_mix = history_mix + alpha * hist_window[idx]
 
         return x + history_mix
+
+    def call(self, x: tf.Tensor, history) -> tf.Tensor:
+        if isinstance(history, tf.Tensor):
+            return tf.cond(
+                tf.equal(tf.shape(history)[0], 0),
+                lambda: x,
+                lambda: self._call_with_history(x, history, None),
+            )
+        if not history:
+            return x
+        return self._call_with_history(x, tf.stack(history, axis=0), history)
 
 
 class TFMatrixMHCSkip(tf.keras.layers.Layer):
