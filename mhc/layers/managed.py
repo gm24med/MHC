@@ -31,7 +31,8 @@ class MHCSequential(nn.Module):
         constraint: Optional[str] = None,
         epsilon: Optional[float] = None,
         detach_history: Optional[bool] = None,
-        clear_history_each_forward: Optional[bool] = None
+        clear_history_each_forward: Optional[bool] = None,
+        use_gating: bool = False
     ) -> None:
         """Initializes the MHCSequential container.
 
@@ -44,6 +45,7 @@ class MHCSequential(nn.Module):
             detach_history: Whether to detach history tensors. Recommended to be
                 True for long sequential chains to avoid memory issues.
             clear_history_each_forward: Whether to reset history at each forward.
+            use_gating: Whether to use learnable gating for history contribution.
         """
         super().__init__()
         self.wrapped_modules = nn.ModuleList()
@@ -63,7 +65,8 @@ class MHCSequential(nn.Module):
                     mode=resolve_default(mode, "mode"),
                     max_history=resolve_default(max_history, "max_history"),
                     constraint=resolve_default(constraint, "constraint"),
-                    epsilon=resolve_default(epsilon, "epsilon")
+                    epsilon=resolve_default(epsilon, "epsilon"),
+                    use_gating=use_gating
                 )
             )
 

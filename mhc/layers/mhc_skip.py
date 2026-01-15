@@ -37,7 +37,8 @@ class MHCSkip(nn.Module):
         epsilon: Optional[float] = None,
         temperature: Optional[float] = None,
         init: Optional[str] = None,
-        auto_project: Optional[bool] = None
+        auto_project: Optional[bool] = None,
+        use_gating: bool = False
     ) -> None:
         """Initializes the MHCSkip layer.
 
@@ -49,6 +50,7 @@ class MHCSkip(nn.Module):
             temperature: Sharpness factor for softmax. Defaults to 1.0.
             init: Initialization strategy for mixing weights ("identity" or "uniform").
             auto_project: If True, project mismatched history shapes to match x.
+            use_gating: If True, learns a global gate to modulate history contribution.
         """
         super().__init__()
         self.mode = resolve_default(mode, "mode")
@@ -57,9 +59,15 @@ class MHCSkip(nn.Module):
         self.epsilon = resolve_default(epsilon, "epsilon")
         self.temperature = resolve_default(temperature, "temperature")
         self.auto_project = resolve_default(auto_project, "auto_project")
+        self.use_gating = use_gating
         self.projection: Optional[nn.Module] = None
 
         self.mixing_logits = nn.Parameter(torch.zeros(self.max_history))
+        if self.use_gating:
+            # Initialize gate to 1.0 (sigmoid(0) = 0.5, so we use 0.0 or a high value)
+            # We use 0.0 so it starts at 0.5, or 2.0 to start "mostly on".
+            self.gate_logit = nn.Parameter(torch.tensor(2.0))
+
         self._reset_parameters(resolve_default(init, "init"))
 
     def _build_projection(self, history: torch.Tensor, x: torch.Tensor) -> nn.Module:
@@ -168,5 +176,8 @@ class MHCSkip(nn.Module):
                     "Ensure all layers in a Hyper-Connection block preserve dimensions."
                 )
             history_mix = history_mix + alpha * h_state
+
+        if self.use_gating:
+            history_mix = history_mix * torch.sigmoid(self.gate_logit)
 
         return x + history_mix
