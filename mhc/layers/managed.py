@@ -14,14 +14,11 @@ class MHCSequential(nn.Module):
     transparently. It inserts an `MHCSkip` layer after each wrapped module and
     updates a internal `HistoryBuffer` during the forward pass.
 
-    This is the recommended way to use Hyper-Connections in a simple feedstock
-    network (like an MLP or a Stack of Transformer layers) as it eliminates
-    the need to manually manage buffers.
-
     Attributes:
         wrapped_modules (nn.ModuleList): The original sequential modules.
         skip_layers (nn.ModuleList): Corresponding MHCSkip layers for each module.
         history_buffer (HistoryBuffer): Shared buffer for historical states.
+        use_checkpointing (bool): If True, uses gradient checkpointing for memory efficiency.
     """
 
     def __init__(
@@ -34,7 +31,8 @@ class MHCSequential(nn.Module):
         detach_history: Optional[bool] = None,
         clear_history_each_forward: Optional[bool] = None,
         use_gating: bool = False,
-        use_checkpointing: bool = False
+        use_checkpointing: bool = False,
+        prune_threshold: float = 0.0
     ) -> None:
         """Initializes the MHCSequential container.
 
@@ -44,11 +42,11 @@ class MHCSequential(nn.Module):
             mode: Mixing mode ("mhc", "hc", "residual"). Defaults to "mhc".
             constraint: Geometric constraint type. Defaults to "simplex".
             epsilon: Identity preservation epsilon. Defaults to 0.1.
-            detach_history: Whether to detach history tensors. Recommended to be
-                True for long sequential chains to avoid memory issues.
+            detach_history: Whether to detach history tensors.
             clear_history_each_forward: Whether to reset history at each forward.
             use_gating: Whether to use learnable gating for history contribution.
             use_checkpointing: If True, uses gradient checkpointing for each block.
+            prune_threshold: Weights below this value will be zeroed out.
         """
         super().__init__()
         self.use_checkpointing = use_checkpointing
@@ -69,7 +67,9 @@ class MHCSequential(nn.Module):
                     mode=resolve_default(mode, "mode"),
                     max_history=resolve_default(max_history, "max_history"),
                     constraint=resolve_default(constraint, "constraint"),
-                    epsilon=resolve_default(epsilon, "epsilon")
+                    epsilon=resolve_default(epsilon, "epsilon"),
+                    use_gating=use_gating,
+                    prune_threshold=prune_threshold
                 )
             )
 
@@ -96,7 +96,6 @@ class MHCSequential(nn.Module):
                 return skip(f_x, list(past_states))
 
             if self.use_checkpointing and x.requires_grad:
-                # We use use_reentrant=False for better compatibility with current PyTorch
                 x = checkpoint(block, x, *h_states, use_reentrant=False)
             else:
                 x = block(x, *h_states)
