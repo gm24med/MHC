@@ -2,106 +2,106 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://gm24med.github.io/MHC/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/api/config/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/api/constraints/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/api/layers/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/api/utils/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/concepts/history_lifecycle/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/concepts/hyper_connections/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/concepts/manifold_constraints/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/concepts/mathematical_derivation/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/concepts/stability/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/features/checkpointing/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/features/gating/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/features/matrix_mixing/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/features/pruning/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/features/variational/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/guides/advanced_customization/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/guides/custom_layers/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/guides/huggingface/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/guides/performance_optimization/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/guides/pytorch_lightning/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/guides/tensorflow/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/guides/testing_and_benchmarking/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/guides/troubleshooting/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/guides/vision/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/tutorials/basic_usage/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
     <url>
          <loc>https://gm24med.github.io/MHC/tutorials/quickstart/</loc>
-         <lastmod>2026-01-15</lastmod>
+         <lastmod>2026-01-17</lastmod>
     </url>
 </urlset>
