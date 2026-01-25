@@ -1,7 +1,7 @@
 <div align="center">
 
 
-<img src="docs/images/logo.png" alt="mHC Logo" width="200"/>
+<img src="https://raw.githubusercontent.com/gm24med/MHC/main/docs/images/logo.png" alt="mHC Logo" width="200"/>
 
 # mhc: Manifold-Constrained Hyper-Connections
 
@@ -33,21 +33,35 @@
 <br/>
 
 <div align="center">
-<img src="docs/images/architecture.png" alt="mHC Architecture" width="800"/>
+<img src="https://raw.githubusercontent.com/gm24med/MHC/main/docs/images/architecture.png" alt="mHC Architecture" width="800"/>
 </div>
 
 ---
 
-## 🚀 Quick Start
-
 ### Installation
 
-```bash
-# With uv (recommended)
-uv pip install -e .
+“We recommend `uv` for faster and reproducible installs, but standard `pip` is fully supported.”
 
-# Or standard pip
-pip install -e .
+```bash
+# Using pip (standard)
+pip install mhc
+```
+
+```bash
+# Using uv (faster, recommended)
+uv pip install mhc
+```
+
+### Optional Extras
+
+```bash
+# Visualization utilities
+pip install "mhc[viz]"
+uv pip install "mhc[viz]"
+
+# TensorFlow support
+pip install "mhc[tf]"
+uv pip install "mhc[tf]"
 ```
 
 ### 30-Second Example
@@ -127,10 +141,17 @@ Experiments with 50-layer networks show:
 
 <div align="center">
 
-| **Mixing Weights** | **Gradient Flow** |
+| **Training Dashboard** | **History Evolution** |
 |:---:|:---:|
-| ![Mixing Weights](mixing_weights.png) | ![Gradient Flow](gradient_flow.png) |
-| *Learned coefficients over time* | *Improved backpropagation signal* |
+| ![Training Dashboard](https://raw.githubusercontent.com/gm24med/MHC/main/docs/images/training_dashboard.png) | ![Mixing Weights](https://raw.githubusercontent.com/gm24med/MHC/main/docs/images/mixing_weights.png) |
+| *Loss curves & weight dynamics* | *Learned coefficients over time* |
+
+<br/>
+
+| **Gradient Flow** | **Feature Contribution** |
+|:---:|:---:|
+| ![Gradient Flow](https://raw.githubusercontent.com/gm24med/MHC/main/docs/images/gradient_flow.png) | ![History Contribution](https://raw.githubusercontent.com/gm24med/MHC/main/docs/images/history_contribution.png) |
+| *Improved backpropagation signal* | *Single layer state importance* |
 
 </div>
 
@@ -152,13 +173,20 @@ MHC/
 
 ---
 
-## 📜 Roadmap
+## 🛠️ Development Installation
 
-- [x] **v0.4**: Managed Layers & Model Injection
-- [ ] **v0.5**: Deep Stability Benchmark Suite
-- [ ] **v0.6**: PyPI Release & Documentation Site
-- [ ] **v0.7**: PyTorch Lightning & Hugging Face Integration
-- [ ] **v0.8**: Pre-trained Model Zoo
+For contributors cloning the repository:
+
+```bash
+git clone https://github.com/gm24med/MHC.git
+cd MHC
+
+# Using uv (recommended for dev)
+uv pip install -e ".[dev]"
+
+# Or standard pip
+pip install -e ".[dev]"
+```
 
 ---
 
